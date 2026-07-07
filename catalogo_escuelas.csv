@@ -1,0 +1,260 @@
+﻿Clave_DGES,Esc_norm_1,Estado,municipio
+ags01,Centro Regional de Educación Normal de Aguascalientes,Aguascalientes,Aguascalientes
+ags04,"Escuela Normal Rural ""Justo Sierra Méndez""",Aguascalientes,Aguascalientes
+ags03,"Escuela Normal Superior Federal de Aguascalientes ""Profr José SantosValdés""",Aguascalientes,Aguascalientes
+ags02,Escuela Normal de Aguascalientes,Aguascalientes,Aguascalientes
+ags06,"Escuela Normal de Rincón de Romos ""Dr Rafael Francisco Aguilar Lomelí""",Aguascalientes,
+bca03,Benemérita Escuela Normal Educadora Rosaura Zapata,Baja California,Mexicali
+bca02,"Benemérita Escuela Normal Estatal, Profesor Jesús Prado Luna",Baja California,Ensenada
+bca23,"Benemérita Escuela Normal Estatal, Profesor Jesús Prado Luna, Ext SanQuintín",Baja California,San Quintín
+bca04,"Benemérita Escuela Normal Urbana Federal ""Fronteriza"" de Mexicali",Baja California,Mexicali
+bca06,"Benemérita Escuela Normal Urbana Nocturna del Estado, Ing José GValenzuela",Baja California,Mexicali
+bca08,"Escuela Normal ""Profr Gregorio Torres Quintero""",Baja California,
+bca01,"Escuela Normal Experimental ""Mtro Rafael Ramírez""",Baja California,Mexicali
+bca09,Escuela Normal Fronteriza Tijuana,Baja California,Tijuana
+bca07,Escuela Normal del Valle de Mexicali Ejido Campeche,Baja California,Mexicali
+bca99,Instituto de Bellas Artes del Estado de Baja California,Baja California,Mexicali
+bca22,Normal Estefanía Castañeda y Núñez de Cáceres,Baja California,Mexicali
+bcs01,"Benemérita Escuela Normal Urbana ""Profr Domingo Carballo Félix""",Baja California Sur,La Paz
+bcs03,"Centro Regional de Educación Normal ""Marcelo Rubio Ruiz""",Baja California Sur,Loreto
+bcs02,Escuela Normal Superior del Estado de Baja California Sur,Baja California Sur,La Paz
+bcs05,Escuela Normal Superior del Estado de Baja California Sur (Extensión CdConstitución),Baja California Sur,Comondú
+bcs04,Escuela Normal Superior del Estado de Baja California Sur (Extensión LosCabos),Baja California Sur,Los Cabos
+bcs7r,Escuela Superior de Cultura Física de Baja California Sur,Baja California Sur,La Paz
+cam09,"Benemérita Escuela Normal ""Profra Pilar Elena Flores Acuña"" del InstitutoCampechano***",Campeche,
+cam07,"Escuela Normal Rural ""Justo Sierra Méndez""",Campeche,Hecelchakán
+cam08,"Escuela Normal Superior ""Profr Salomón Barrancos Aguilar"" del InstitutoCampechano***",Campeche,
+cam06,Escuela Normal Superior Federal de Campeche,Campeche,Campeche
+cam10,Escuela Normal de Educación Preescolar Lic Miriam Cuevas Trujillo,Campeche,
+cam04,Escuela Normal de Licenciatura en Educación Especial,Campeche,Calkiní
+cam05,Escuela Normal de Licenciatura en Educación Física,Campeche,Calkiní
+cam03,"Escuela Normal de Licenciatura en Educación Preescolar ""Profr PastorRodríguez Estrada""",Campeche,Calkiní
+cam02,"Escuela Normal de Licenciatura en Educación Preescolar ""Profr PastorRodríguez Estrada"" (Módulo Hecelchakán)***",Campeche,
+cam11,Escuela Normal de Licenciatura en Educación Primaria (Módulo Hopelchén),Campeche,Hopelchén
+cam01,Escuela Normal de Licenciatura en Educación Primaria de Calkiní,Campeche,Calkiní
+chp10,"Escuela Normal Experimental ""La Enseñanza"" e ""Ignacio Manuel Altamirano""",Chiapas,Tuxtla Chico
+chp03,Escuela Normal Rural Mactumactzá,Chiapas,Tuxtla Gutiérrez
+chp15,Escuela Normal Superior de Chiapas,Chiapas,Tuxtla Gutiérrez
+chp13,"Escuela Normal de Licenciatura en Educación Física ""Profr Pedro ReynolOzuna Henning""",Chiapas,Tuxtla Gutiérrez
+chp07,Escuela Normal de Licenciatura en Educación Física de Tapachula,Chiapas,Tapachula
+chp11,"Escuela Normal de Licenciatura en Educación Preescolar ""Bertha Von Glumery Leyva""",Chiapas,
+chp04,"Escuela Normal de Licenciatura en Educación Preescolar ""Lic ManuelLarraínzar""",Chiapas,San Cristóbal de las Casas
+chp08,"Escuela Normal de Licenciatura en Educación Preescolar ""RosarioCastellanos""",Chiapas,Tapachula
+chp12,"Escuela Normal de Licenciatura en Educación Preescolar ""Rosaura ZapataCano""",Chiapas,Tuxtla Gutiérrez
+chp17,"Escuela Normal de Licenciatura en Educación Preescolar y Primaria delEstado ""Tonalá""",Chiapas,Tonalá
+chp01,"Escuela Normal de Licenciatura en Educación Primaria ""Del Occidente deChiapas""",Chiapas,Cintalapa
+chp02,"Escuela Normal de Licenciatura en Educación Primaria ""Dr Manuel VelascoSuárez""",Chiapas,Huehuetán
+chp09,"Escuela Normal de Licenciatura en Educación Primaria ""Fray Matías deCórdova""",Chiapas,Tapachula
+chp19,"Escuela Normal de Licenciatura en Educación Primaria ""Lic ManuelLarraínzar""",Chiapas,San Cristóbal de las Casas
+chp16,"Escuela Normal de Licenciatura en Educación Primaria ""Villaflores""",Chiapas,Villaflores
+chp14,Escuela Normal de Licenciatura en Educación Primaria del Estado (Turnomatutino),Chiapas,Tuxtla Gutiérrez
+chp20,Escuela Normal de Licenciatura en Educación Primaria del Estado (Turnovespertino),Chiapas,Tuxtla Gutiérrez
+chi02,"Escuela Normal Experimental ""Miguel Hidalgo""",Chihuahua,Hidalgo del Parral
+chi07,"Escuela Normal Particular ""Yermo y Parres""",Chihuahua,
+chi03,"Escuela Normal Rural ""Ricardo Flores Magón""",Chihuahua,
+chi04,"Escuela Normal Superior ""Profr José E Medrano R""",Chihuahua,Chihuahua
+chi05,"Escuela Normal Superior ""Profr José E Medrano R"" (Unidad Juárez)",Chihuahua,Juárez
+chi08,"Escuela Normal Superior ""Profr José E Medrano R"" (Unidad Nuevo CasasGrandes)",Chihuahua,
+chi06,"Escuela Normal Superior ""Profr José E Medrano R"" (Unidad Parral)",Chihuahua,Hidalgo del Parral
+chi01,Institución Benemérita y Centenaria Escuela Normal del Estado deChihuahua Profesor Luis Urías Belderráin,Chihuahua,Chihuahua
+cdmx02,Benemérita Escuela Nacional de Maestros,Ciudad de México,
+cdmx01,Escuela Nacional para Maestras de Jardines de Niños,Ciudad de México,Álvaro Obregón
+cdmx03,Escuela Normal Superior de México,Ciudad de México,Azcapotzalco
+cdmx04,Escuela Normal de Especialización,Ciudad de México,Miguel Hidalgo
+cdmx05,Escuela Superior de Educación Física,Ciudad de México,Iztacalco
+coh02,Benemérita Escuela Normal de Coahuila,Coahuila,Saltillo
+coh07,Escuela Normal Experimental,Coahuila,San Juan de Sabinas
+coh01,"Escuela Normal Ofi cial ""Dora Madero""",Coahuila,Parras
+coh05,Escuela Normal Regional de Especialización del Estado de Coahuila,Coahuila,Saltillo
+coh06,Escuela Normal Superior del Estado de Coahuila,Coahuila,Saltillo
+coh03,Escuela Normal de Educación Física,Coahuila,Saltillo
+coh04,Escuela Normal de Educación Preescolar del Estado de Coahuila,Coahuila,Saltillo
+coh10,Escuela Normal de Monclova,Coahuila,
+coh08,Escuela Normal de Torreón,Coahuila,Torreón
+col02,"Instituto Superior de Educación Normal del Estado de Colima ""Profr GregorioTorres Quintero""(Subsede Cuauhtémoc)",Colima,
+col03,"Instituto Superior de Educación Normal del Estado de Colima ""Profr GregorioTorres Quintero""(Subsede Manzanillo)",Colima,
+col04,"Instituto Superior de Educación Normal del Estado de Colima ""Profr GregorioTorres Quintero""(Subsede Tecomán)",Colima,
+dgo04,Benemérita y Centenaria Escuela Normal del Estado de Durango,Durango,Durango
+dgo1c,Centro de Actualización del Magisterio de Durango,Durango,
+dgo01,"Escuela Normal Rural ""J Guadalupe Aguilera""",Durango,
+dgo03,"Escuela Normal Urbana ""Profr Carlos A Carrillo""",Durango,El Oro
+dgo02,"Instituto de Estudios Superiores de Educación Normal ""Gral LázaroCárdenas del Río""",Durango,
+mex33,Centenaria y Benemérita Escuela Normal para Profesores,Estado de México,Toluca
+mex08,Escuela Normal No 1 de Nezahualcóyotl,Estado de México,Nezahualcóyotl
+mex32,Escuela Normal No 1 de Toluca,Estado de México,Toluca
+mex09,Escuela Normal No 2 de Nezahualcóyotl,Estado de México,Nezahualcóyotl
+mex10,Escuela Normal No 3 de Nezahualcóyotl,Estado de México,Nezahualcóyotl
+mex34,Escuela Normal No 3 de Toluca,Estado de México,Toluca
+mex11,Escuela Normal No 4 de Nezahualcóyotl,Estado de México,Nezahualcóyotl
+mex25,"Escuela Normal Rural ""Gral Lázaro Cárdenas del Río""",Estado de México,
+mex35,Escuela Normal Superior del Estado de México,Estado de México,Toluca
+mex1c,Escuela Normal Superior del Valle de México,Estado de México,Tlalnepantla de Baz
+mex2c,Escuela Normal Superior del Valle de Toluca,Estado de México,Toluca
+mex01,Escuela Normal de Amecameca,Estado de México,Amecameca
+mex02,Escuela Normal de Atizapán de Zaragoza,Estado de México,Atizapán de Zaragoza
+mex04,Escuela Normal de Atlacomulco,Estado de México,Atlacomulco
+mex05,Escuela Normal de Capulhuac,Estado de México,Capulhuac
+mex07,Escuela Normal de Chalco,Estado de México,Chalco
+mex12,Escuela Normal de Coacalco,Estado de México,Coacalco de Berriozábal
+mex13,Escuela Normal de Coatepec Harinas,Estado de México,Coatepec Harinas
+mex14,Escuela Normal de Cuautitlán Izcalli,Estado de México,Cuautitlán Izcalli
+mex15,Escuela Normal de Ecatepec,Estado de México,Ecatepec de Morelos
+mex03,Escuela Normal de Educación Especial del Estado de México,Estado de México,Atizapán de Zaragoza
+mex31,"Escuela Normal de Educación Física ""Gral Ignacio M Beteta""",Estado de México,Toluca
+mex16,Escuela Normal de Ixtapan de la Sal,Estado de México,Ixtapan de la Sal
+mex17,Escuela Normal de Ixtlahuaca,Estado de México,
+mex18,Escuela Normal de Jilotepec,Estado de México,Jilotepec
+mex06,Escuela Normal de Los Reyes Acaquilpan,Estado de México,La Paz
+mex19,Escuela Normal de Naucalpan,Estado de México,Naucalpan de Juárez
+mex20,Escuela Normal de San Felipe del Progreso,Estado de México,San Felipe del Progreso
+mex30,Escuela Normal de Santa Ana Zicatecoyan,Estado de México,
+mex28,Escuela Normal de Santiago Tianguistenco,Estado de México,Tianguistenco
+mex21,Escuela Normal de Sultepec,Estado de México,Sultepec
+mex22,Escuela Normal de Tecámac,Estado de México,Tecámac
+mex23,Escuela Normal de Tejupilco,Estado de México,Tejupilco
+mex24,Escuela Normal de Tenancingo,Estado de México,Tenancingo
+mex26,Escuela Normal de Teotihuacan,Estado de México,Teotihuacán
+mex27,Escuela Normal de Texcoco,Estado de México,Texcoco
+mex29,Escuela Normal de Tlalnepantla,Estado de México,Tlalnepantla de Baz
+mex36,Escuela Normal de Valle de Bravo,Estado de México,
+mex37,Escuela Normal de Zumpango,Estado de México,Zumpango
+mex4c,Unidad de Desarrollo Profesional de Tlalnepantla,Estado de México,
+gto07,Benemérita y Centenaria Escuela Normal Ofi cial de Guanajuato,Guanajuato,Guanajuato
+gto08,Centro de Estudios Superiores de Educación Especializada,Guanajuato,
+gto09,Escuela Normal Ofi cial de Irapuato,Guanajuato,Irapuato
+gto10,Escuela Normal Ofi cial de León,Guanajuato,León
+gto06,Escuela Normal Superior Ofi cial de Guanajuato (Subsede San José Iturbide),Guanajuato,San José Iturbide
+gto01,Escuela Normal Superior Oficial de Guanajuato,Guanajuato,Guanajuato
+gro03,"Centenaria Escuela Normal del Estado ""Ignacio Manuel Altamirano""",Guerrero,Chilpancingo de los Bravo
+gro08,"Centro Regional de Educación Normal ""Adolfo López Mateos""",Guerrero,Iguala de la Independencia
+gro1c,Centro de Actualización del Magisterio de Acapulco,Guerrero,
+gro2c,Centro de Actualización del Magisterio de Chilpancingo,Guerrero,
+gro3c,Centro de Actualización del Magisterio de Iguala,Guerrero,
+gro09,"Escuela Normal ""Vicente Guerrero""",Guerrero,Teloloapan
+gro07,"Escuela Normal Preescolar ""Adolfo Viguri Viguri""",Guerrero,Chilpancingo de los Bravo
+gro06,Escuela Normal Regional de Tierra Caliente,Guerrero,
+gro05,"Escuela Normal Regional de la Montaña ""José Vasconcelos""",Guerrero,Tlapa de Comonfort
+gro01,"Escuela Normal Rural ""Profr Raúl Isidro Burgos""",Guerrero,
+gro02,Escuela Normal Superior de Educación Física,Guerrero,
+gro04,"Escuela Normal Urbana Federal ""Profr Rafael Ramírez""",Guerrero,Chilpancingo de los Bravo
+hgo03,"Centro Regional de Educación Normal ""Benito Juárez""",Hidalgo,Pachuca de Soto
+hgo05,"Escuela Normal ""Sierra Hidalguense""",Hidalgo,Tianguistengo
+hgo04,"Escuela Normal ""Valle del Mezquital""",Hidalgo,
+hgo06,"Escuela Normal Experimental ""De Las Huastecas""",Hidalgo,Huejutla de Reyes
+hgo12,Escuela Normal Superior Pública del Estado de Hidalgo,Hidalgo,Pachuca de Soto
+jal11,Benemérita y Centenaria Escuela Normal de Jalisco,Jalisco,Guadalajara
+jal03,Centro Regional de Educación Normal de Cd Guzmán,Jalisco,
+jal08,"Escuela Normal Experimental de ""San Antonio Matute""",Jalisco,
+jal04,Escuela Normal Experimental de Colotlán,Jalisco,Colotlán
+jal02,"Escuela Normal Rural ""Miguel Hidalgo"" de Atequiza",Jalisco,Ixtlahuacán de los Membrillos
+jal06,Escuela Normal Superior de Especialidades,Jalisco,Guadalajara
+jal07,Escuela Normal Superior de Jalisco,Jalisco,Guadalajara
+jal10,Escuela Normal para Educadoras de Arandas,Jalisco,Arandas
+jal01,Escuela Normal para Educadoras de Guadalajara,Jalisco,Zapopan
+jal09,Escuela Normal para Educadoras de Unión de Tula,Jalisco,Unión de Tula
+jal05,Escuela Superior de Educación Física de Jalisco,Jalisco,
+mch06,Benemérita y Centenaria Escuela Normal Urbana Federal J Jesús RomeroFlores,Michoacán,Morelia
+mch02,Centro Regional de Educación Normal Licenciatura en Preescolar deArteaga,Michoacán,Arteaga
+mch01,Centro Regional de Educación Normal Primaria de Arteaga,Michoacán,
+mch1c,Centro de Actualización del Magisterio (Morelia),Michoacán,
+mch12,Escuela Normal Indígena de Michoacán,Michoacán,Cherán
+mch07,"Escuela Normal Rural ""Vasco de Quiroga""",Michoacán,
+mch05,Escuela Normal Superior de Michoacán,Michoacán,Morelia
+mch03,Escuela Normal de Educación Física,Michoacán,
+mch04,Escuela Normal para Educadoras de Morelia,Michoacán,Morelia
+mch17,"Instituto Michoacano de Ciencias de la Educación ""José María Morelos""Plantel Morelia",Michoacán,
+mor01,"Escuela Normal Rural ""Gral Emiliano Zapata""",Morelos,
+mor02,Escuela Normal Urbana Federal Cuautla,Morelos,Cuautla
+nay01,Escuela Normal Experimental de Acaponeta,Nayarit,Acaponeta
+nay03,Escuela Normal Superior de Nayarit,Nayarit,Tepic
+nay02,"Instituto Estatal de Educación Normal de Nayarit ""Profr y Lic FranciscoBenítez Silva""",Nayarit,
+nul02,"Escuela Normal ""Ing Miguel F Martínez"" Centenaria y Benemérita",Nuevo León,
+nul01,"Escuela Normal ""Profr Serafín Peña""",Nuevo León,Montemorelos
+nul05,Escuela Normal Pablo Livas,Nuevo León,Sabinas Hidalgo
+nul04,"Escuela Normal Superior ""Profr Moisés Sáenz Garza""",Nuevo León,Monterrey
+nul03,Escuela Normal de Especialización,Nuevo León,Monterrey
+oax03,Centro Regional de Educación Normal de Oaxaca,Oaxaca,Oaxaca de Juárez
+oax08,Centro Regional de Educación Normal de Río Grande,Oaxaca,Villa de Tututepec
+oax12,Escuela Normal Bilingüe e Intercultural de Oaxaca,Oaxaca,
+oax07,"Escuela Normal Experimental ""Presidente Lázaro Cárdenas""",Oaxaca,Putla Villa de Guerrero
+oax09,"Escuela Normal Experimental ""Presidente Venustiano Carranza""",Oaxaca,San Juan Cacahuatepec
+oax01,Escuela Normal Experimental Huajuapan,Oaxaca,Heroica Ciudad de Huajuapan de León
+oax11,Escuela Normal Experimental de Teposcolula,Oaxaca,San Pedro y San Pablo Teposcolula
+oax10,Escuela Normal Rural Vanguardia,Oaxaca,Villa de Tamazulápam del Progreso
+oax02,Escuela Normal Urbana Federal del Istmo,Oaxaca,Ciudad Ixtepec
+oax05,Escuela Normal de Educación Especial,Oaxaca,Oaxaca de Juárez
+oax04,Escuela Normal de Educación Preescolar de Oaxaca,Oaxaca,Oaxaca de Juárez
+pue03,"Benemérito Instituto Normal del Estado ""Gral Juan Crisóstomo Bonilla""",Puebla,
+pue02,"Escuela Normal ""Profr Fidel Meza y Sánchez""",Puebla,Huauchinango
+pue01,"Escuela Normal Experimental ""Profr Darío Rodríguez Cruz""",Puebla,Acatlán
+pue14,"Escuela Normal Ofi cial ""Lic Benito Juárez""",Puebla,Zacatlán
+pue18,"Escuela Normal Primaria Ofi cial ""Profr Jesús Merino Nieto""",Puebla,Ixcaquixtla
+pue13,"Escuela Normal Rural ""Carmen Serdán""",Puebla,Teteles de Avila Castillo
+pue12,Escuela Normal Superior Federalizada del Estado de Puebla,Puebla,Puebla
+pue4r,Escuela Normal Superior de Tehuacán,Puebla,Tehuacán
+pue04,Escuela Normal Superior del Estado,Puebla,Puebla
+pue1c,Instituto Jaime Torres Bodet,Puebla,
+pue15,"Normal Ofi cial ""Profr Luis Casarrubias Ibarra""",Puebla,Chiautla
+qro01,"Centenaria y Benemérita Escuela Normal del Estado de Querétaro ""AndrésBalvanera""",Queretaro,Querétaro
+qro03,"Centenaria y Benemérita Escuela Normal del Estado de Querétaro ""AndrésBalvanera"" (Unidad Jalpan)",Queretaro,Jalpan de Serra
+qro02,"Centenaria y Benemérita Escuela Normal del Estado de Querétaro ""AndrésBalvanera"" (Unidad San Juan del Río )",Queretaro,San Juan del Río
+qro04,Escuela Normal Superior de Querétaro,Queretaro,Querétaro
+qoo05,Centro Regional de Educación Normal,Quintana Roo,Felipe Carrillo Puerto
+qoo04,"Centro Regional de Educación Normal ""Javier Rojo Gómez""",Quintana Roo,Bacalar
+qoo1c,Centro de Actualización del Magisterio,Quintana Roo,
+slp03,Benemérita y Centenaria Escuela Normal del Estado de San Luis Potosí,San Luis Potosí,San Luis Potosí
+slp01,"Centro Regional de Educación Normal ""Profra Amina Madera Lauterio""",San Luis Potosí,Cedral
+slp02,Escuela Normal Experimental Normalismo Mexicano,San Luis Potosí,Matehuala
+slp05,"Escuela Normal de Estudios Superiores del Magisterio Potosino Plantel 1,San Luis Potosí",San Luis Potosí,San Luis Potosí
+slp06,"Escuela Normal de Estudios Superiores del Magisterio Potosino Plantel 2,Ciudad Valles",San Luis Potosí,Ciudad Valles
+slp07,"Escuela Normal de Estudios Superiores del Magisterio Potosino Plantel 3,Matehuala",San Luis Potosí,Matehuala
+slp08,"Escuela Normal de Estudios Superiores del Magisterio Potosino Plantel 4,Río Verde",San Luis Potosí,Rioverde
+slp09,"Escuela Normal de Estudios Superiores del Magisterio Potosino Plantel 5,Tamazunchale",San Luis Potosí,
+slp04,Escuela Normal de La Huasteca Potosina,San Luis Potosí,Rayón
+sin03,"Escuela Normal Experimental de El Fuerte ""Profr Miguel Castillo Cruz""",Sinaloa,
+sin05,"Escuela Normal Experimental de El Fuerte ""Profr Miguel Castillo Cruz""(Extensión Mazatlán)",Sinaloa,
+sin01,Escuela Normal de Especialización del Estado de Sinaloa,Sinaloa,
+sin02,Escuela Normal de Sinaloa,Sinaloa,Culiacán
+sin04,Escuela Normal del Pacífico,Sinaloa,
+son06,"Centro Regional de Educación Normal ""Rafael Ramírez Castañeda""(Navojoa)",Sonora,Navojoa
+son01,Escuela Normal Estatal de Especialización,Sonora,Cajeme
+son02,"Escuela Normal Rural ""Gral Plutarco Elías Calles""",Sonora,
+son04,Escuela Normal Superior de Hermosillo,Sonora,Hermosillo
+son11,Escuela Normal Superior de Hermosillo (Subsede Cd Obregón),Sonora,
+son08,Escuela Normal Superior de Hermosillo (Subsede Navojoa),Sonora,Navojoa
+son05,"Escuela Normal de Educación Física ""Profr Emilio Miramontes Nájera""",Sonora,Hermosillo
+son03,"Escuela Normal del Estado ""Profr Jesús Manuel Bustamante Mungarro""",Sonora,Hermosillo
+tab02,"Escuela Normal ""Graciela Pintado de Madrazo""",Tabasco,Centro
+tab03,"Escuela Normal ""Pablo García Ávalos""",Tabasco,Centro
+tab01,Escuela Normal Urbana de Balancán,Tabasco,Balancán
+tab08,"Escuela Normal de Educación Primaria ""Rosario María Gutiérrez Eskildsen""",Tabasco,Centro
+tab04,"Escuela Normal del Estado ""Rosario María Gutiérrez Eskildsen""",Tabasco,Centro
+tab1c,Instituto de Educación Superior del Magisterio (IESMA),Tabasco,Nacajuca
+tam01,Benemérita Escuela Normal Federalizada de Tamaulipas,Tamaulipas,Victoria
+tam1c,Centro de Actualización del Magisterio (Victoria),Tamaulipas,
+tam04,"Escuela Normal ""Lic J Guadalupe Mainero""",Tamaulipas,Matamoros
+tam03,"Escuela Normal ""Profr y Gral Alberto Carrera Torres""",Tamaulipas,Jaumave
+tam02,"Escuela Normal Federal de Educadoras ""Mtra Estefanía Castañeda""",Tamaulipas,Victoria
+tam07,Escuela Normal Rural de Tam Maestro Lauro Aguirre,Tamaulipas,
+tam06,Escuela Normal Urbana Cuauhtémoc,Tamaulipas,Nuevo Laredo
+tla1c,Centro de Actualización del Magisterio,Tlaxcala,
+tla05,"Escuela Normal Estatal ""Profra Leonarda Gómez Blanco""",Tlaxcala,Santa Apolonia Teacalco
+tla01,"Escuela Normal Preescolar ""Profra Francisca Madera Martínez""",Tlaxcala,Panotla
+tla02,"Escuela Normal Rural ""Lic Benito Juárez""",Tlaxcala,Panotla
+tla04,"Escuela Normal Urbana Federal ""Lic Emilio Sánchez Piedras""",Tlaxcala,Tlaxcala
+ver05,"Benemérita Escuela Normal Veracruzana ""Enrique C Rébsamen""",Veracruz,Xalapa
+ver03,"Centro Regional de Educación Normal ""Dr Gonzalo Aguirre Beltrán""",Veracruz,Tuxpan
+ver01,"Centro de Estudios Superiores de Educación Rural ""Luis Hidalgo Monroy""",Veracruz,
+ver02,"Escuela Normal ""Juan Enríquez""",Veracruz,Tlacotalpan
+ver06,"Escuela Normal Superior Veracruzana ""Dr Manuel Suárez Trujillo""",Veracruz,Xalapa
+yuc07,"Benemérita y Centenaria Escuela Normal de Educación Primaria ""RodolfoMenéndez de la Peña""",Yucatan,
+yuc09,"Escuela Normal ""Juan de Dios Rodríguez Heredia""",Yucatan,Valladolid
+yuc03,"Escuela Normal Superior de Yucatán ""Profr Antonio Betancourt Pérez""",Yucatan,Mérida
+yuc01,Escuela Normal de Dzidzantún,Yucatan,Dzidzantún
+yuc02,Escuela Normal de Educación Preescolar,Yucatan,Mérida
+yuc08,Escuela Normal de Ticul,Yucatan,Ticul
+zac1c,Centro de Actualización del Magisterio,Zacatecas,
+zac04,"Escuela Normal ""Manuel Ávila Camacho""",Zacatecas,Zacatecas
+zac02,"Escuela Normal Experimental ""Rafael Ramírez Castañeda""",Zacatecas,General Francisco R. Murguía
+zac01,"Escuela Normal Experimental ""Salvador Varela Reséndiz""",Zacatecas,
+zac03,"Escuela Normal Rural ""General Matías Ramos Santos""",Zacatecas,Loreto

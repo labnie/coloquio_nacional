@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registra tu experiencia radial — Red Normalista</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#FFFFFF;
+    --panel:#FFFFFF;
+    --panel-2:#F2EFEA;
+    --paper:#161A1D;
+    --amber:#9B2247;
+    --amber-dim:#611232;
+    --teal:#1E5B4F;
+    --teal-bright:#1E5B4F;
+    --line:#DEDAD2;
+    --muted:#5A5650;
+    --gold:#A57F2C;
+    --radius:8px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--ink);color:var(--paper);font-family:"Noto Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;min-height:100vh;}
+  .display{font-family:"Noto Sans",-apple-system,sans-serif;font-weight:800;}
+  .wrap{max-width:640px;margin:0 auto;padding:40px 24px 80px;}
+
+  @media (max-width:600px){
+    .wrap{padding:24px 16px 60px;}
+    h1{font-size:24px;}
+    .link-row{grid-template-columns:90px 1fr auto;gap:6px;}
+  }
+
+  .badge{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:11px;letter-spacing:2.5px;color:var(--amber);text-transform:uppercase;
+    margin-bottom:14px;
+  }
+  .dial-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);}
+  .back-link{
+    display:inline-block;font-size:12.5px;color:var(--teal);text-decoration:none;
+    font-weight:600;margin-bottom:18px;
+  }
+  .back-link:hover{text-decoration:underline;}
+
+  h1{font-size:clamp(26px,4vw,36px);margin:0 0 10px;line-height:1.2;}
+  .subtitle{color:#5C5548;font-size:14.5px;line-height:1.55;max-width:520px;margin:0 0 32px;}
+
+  form{display:flex;flex-direction:column;gap:22px;}
+  .field{display:flex;flex-direction:column;gap:7px;}
+  label{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600;}
+  .hint{font-size:11.5px;color:#7d766a;margin-top:2px;}
+
+  input[type=text], input[type=email], textarea, select{
+    width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;
+    padding:12px 14px;color:var(--paper);font-size:14px;outline:none;font-family:inherit;
+  }
+  input:focus, textarea:focus, select:focus{border-color:var(--teal-bright);}
+  textarea{resize:vertical;min-height:70px;}
+  select{cursor:pointer;appearance:none;-webkit-appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235A5650' stroke-width='2'><path d='m6 9 6 6 6-6'/></svg>");
+    background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;
+  }
+  select optgroup{font-weight:700;color:var(--paper);}
+  select option{font-weight:400;}
+
+  #escuela-resultados{
+    position:relative;
+  }
+
+  .escuela-chip{
+    display:none;align-items:center;gap:10px;background:rgba(30,91,79,0.08);
+    border:1px solid var(--teal);border-radius:8px;padding:10px 14px;font-size:13px;margin-top:10px;
+  }
+  .escuela-chip.active{display:flex;}
+  .escuela-chip .clave{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--teal-bright);font-weight:600;}
+
+  .link-row{display:grid;grid-template-columns:110px 1fr auto;gap:8px;align-items:center;}
+  .link-row input{font-size:13px;}
+  .remove-link{background:transparent;border:none;color:#8A8378;font-size:18px;cursor:pointer;padding:2px 8px;}
+  .remove-link:hover{color:#D9705F;}
+  .add-link{
+    align-self:flex-start;background:transparent;border:1px dashed var(--line);color:#B8B2A6;
+    font-size:12.5px;padding:8px 12px;border-radius:7px;cursor:pointer;
+  }
+  .add-link:hover{border-color:var(--amber-dim);color:var(--amber);}
+
+  .submit-btn{
+    background:var(--amber);color:#FFFFFF;border:none;border-radius:9px;
+    padding:14px 20px;font-size:14.5px;font-weight:700;cursor:pointer;letter-spacing:.3px;
+  }
+  .submit-btn:hover{background:#F0B156;}
+  .submit-btn:disabled{opacity:.5;cursor:not-allowed;}
+
+  .preview-note{
+    margin-top:28px;padding:14px 16px;border-radius:9px;background:var(--panel-2);
+    border:1px solid var(--line);font-size:12px;color:var(--muted);line-height:1.5;
+  }
+  .preview-note b{color:var(--amber);}
+  .preview-note code{background:#fff;border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:11px;}
+
+  #confirmacion{display:none;text-align:center;padding:60px 20px;}
+  #confirmacion.active{display:block;}
+  #confirmacion .dot-big{width:14px;height:14px;border-radius:50%;background:var(--teal-bright);margin:0 auto 18px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="form-view">
+    <div class="badge"><span class="dial-dot"></span> Redes radiales normalistas</div>
+    <a href="mapa_experiencias_radiales.html" class="back-link">← Volver al mapa</a>
+    <h1 class="display">Registra tu experiencia radial</h1>
+    <p class="subtitle">Cuéntanos sobre el programa de radio o podcast de tu escuela normal. Tu información se revisará antes de aparecer en el mapa.</p>
+
+    <form id="registro-form">
+      <div class="field" id="escuela-resultados">
+        <label>Tu escuela normal</label>
+        <select id="escuela-select">
+          <option value="" disabled selected>Selecciona tu escuela…</option>
+        </select>
+        <div class="hint">259 escuelas normales, agrupadas por estado. Los nombres corresponden exactamente al catálogo oficial (shapefile DGESuM).</div>
+        <div class="escuela-chip" id="escuela-chip">
+          <span class="clave" id="chip-clave"></span>
+          <span id="chip-nombre"></span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Nombre del programa o podcast</label>
+        <input type="text" id="programa-input" placeholder="Ej. Voz Normalista">
+      </div>
+
+      <div class="field">
+        <label>Tu nombre (contacto)</label>
+        <input type="text" id="contacto-input" placeholder="Nombre de quien reporta">
+      </div>
+
+      <div class="field">
+        <label>Correo (opcional)</label>
+        <input type="email" id="correo-input" placeholder="contacto@ejemplo.mx">
+      </div>
+
+      <div class="field">
+        <label>Enlaces a sus producciones</label>
+        <div id="link-list"></div>
+        <button type="button" class="add-link" id="add-link-btn">+ Agregar enlace</button>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submit-btn">Enviar registro</button>
+    </form>
+
+    <div class="preview-note">
+      Coordinador general: Mtro. Luis Miguel Aragón Casas<br>
+      Diseño: LabNIE ENSBCS
+    </div>
+  </div>
+
+  <div id="confirmacion">
+    <div class="dot-big"></div>
+    <h1 class="display" style="font-size:22px;">¡Registro recibido!</h1>
+    <p class="subtitle" style="margin:10px auto 0;">Gracias por compartir tu experiencia radial. La revisaremos antes de que aparezca en el mapa.</p>
+  </div>
+</div>
+
+<script>
+const catalogo = [{"clave":"ags01","nombre":"Centro Regional de Educación Normal de Aguascalientes","estado":"Aguascalientes","municipio":"Aguascalientes"},{"clave":"ags04","nombre":"Escuela Normal Rural \"Justo Sierra Méndez\"","estado":"Aguascalientes","municipio":"Aguascalientes"},{"clave":"ags03","nombre":"Escuela Normal Superior Federal de Aguascalientes \"Profr José SantosValdés\"","estado":"Aguascalientes","municipio":"Aguascalientes"},{"clave":"ags02","nombre":"Escuela Normal de Aguascalientes","estado":"Aguascalientes","municipio":"Aguascalientes"},{"clave":"ags06","nombre":"Escuela Normal de Rincón de Romos \"Dr Rafael Francisco Aguilar Lomelí\"","estado":"Aguascalientes","municipio":""},{"clave":"bca03","nombre":"Benemérita Escuela Normal Educadora Rosaura Zapata","estado":"Baja California","municipio":"Mexicali"},{"clave":"bca02","nombre":"Benemérita Escuela Normal Estatal, Profesor Jesús Prado Luna","estado":"Baja California","municipio":"Ensenada"},{"clave":"bca23","nombre":"Benemérita Escuela Normal Estatal, Profesor Jesús Prado Luna, Ext SanQuintín","estado":"Baja California","municipio":"San Quintín"},{"clave":"bca04","nombre":"Benemérita Escuela Normal Urbana Federal \"Fronteriza\" de Mexicali","estado":"Baja California","municipio":"Mexicali"},{"clave":"bca06","nombre":"Benemérita Escuela Normal Urbana Nocturna del Estado, Ing José GValenzuela","estado":"Baja California","municipio":"Mexicali"},{"clave":"bca08","nombre":"Escuela Normal \"Profr Gregorio Torres Quintero\"","estado":"Baja California","municipio":""},{"clave":"bca01","nombre":"Escuela Normal Experimental \"Mtro Rafael Ramírez\"","estado":"Baja California","municipio":"Mexicali"},{"clave":"bca09","nombre":"Escuela Normal Fronteriza Tijuana","estado":"Baja California","municipio":"Tijuana"},{"clave":"bca07","nombre":"Escuela Normal del Valle de Mexicali Ejido Campeche","estado":"Baja California","municipio":"Mexicali"},{"clave":"bca99","nombre":"Instituto de Bellas Artes del Estado de Baja California","estado":"Baja California","municipio":"Mexicali"},{"clave":"bca22","nombre":"Normal Estefanía Castañeda y Núñez de Cáceres","estado":"Baja California","municipio":"Mexicali"},{"clave":"bcs01","nombre":"Benemérita Escuela Normal Urbana \"Profr Domingo Carballo Félix\"","estado":"Baja California Sur","municipio":"La Paz"},{"clave":"bcs03","nombre":"Centro Regional de Educación Normal \"Marcelo Rubio Ruiz\"","estado":"Baja California Sur","municipio":"Loreto"},{"clave":"bcs02","nombre":"Escuela Normal Superior del Estado de Baja California Sur","estado":"Baja California Sur","municipio":"La Paz"},{"clave":"bcs05","nombre":"Escuela Normal Superior del Estado de Baja California Sur (Extensión CdConstitución)","estado":"Baja California Sur","municipio":"Comondú"},{"clave":"bcs04","nombre":"Escuela Normal Superior del Estado de Baja California Sur (Extensión LosCabos)","estado":"Baja California Sur","municipio":"Los Cabos"},{"clave":"bcs7r","nombre":"Escuela Superior de Cultura Física de Baja California Sur","estado":"Baja California Sur","municipio":"La Paz"},{"clave":"cam09","nombre":"Benemérita Escuela Normal \"Profra Pilar Elena Flores Acuña\" del InstitutoCampechano***","estado":"Campeche","municipio":""},{"clave":"cam07","nombre":"Escuela Normal Rural \"Justo Sierra Méndez\"","estado":"Campeche","municipio":"Hecelchakán"},{"clave":"cam08","nombre":"Escuela Normal Superior \"Profr Salomón Barrancos Aguilar\" del InstitutoCampechano***","estado":"Campeche","municipio":""},{"clave":"cam06","nombre":"Escuela Normal Superior Federal de Campeche","estado":"Campeche","municipio":"Campeche"},{"clave":"cam10","nombre":"Escuela Normal de Educación Preescolar Lic Miriam Cuevas Trujillo","estado":"Campeche","municipio":""},{"clave":"cam04","nombre":"Escuela Normal de Licenciatura en Educación Especial","estado":"Campeche","municipio":"Calkiní"},{"clave":"cam05","nombre":"Escuela Normal de Licenciatura en Educación Física","estado":"Campeche","municipio":"Calkiní"},{"clave":"cam03","nombre":"Escuela Normal de Licenciatura en Educación Preescolar \"Profr PastorRodríguez Estrada\"","estado":"Campeche","municipio":"Calkiní"},{"clave":"cam02","nombre":"Escuela Normal de Licenciatura en Educación Preescolar \"Profr PastorRodríguez Estrada\" (Módulo Hecelchakán)***","estado":"Campeche","municipio":""},{"clave":"cam11","nombre":"Escuela Normal de Licenciatura en Educación Primaria (Módulo Hopelchén)","estado":"Campeche","municipio":"Hopelchén"},{"clave":"cam01","nombre":"Escuela Normal de Licenciatura en Educación Primaria de Calkiní","estado":"Campeche","municipio":"Calkiní"},{"clave":"chp10","nombre":"Escuela Normal Experimental \"La Enseñanza\" e \"Ignacio Manuel Altamirano\"","estado":"Chiapas","municipio":"Tuxtla Chico"},{"clave":"chp03","nombre":"Escuela Normal Rural Mactumactzá","estado":"Chiapas","municipio":"Tuxtla Gutiérrez"},{"clave":"chp15","nombre":"Escuela Normal Superior de Chiapas","estado":"Chiapas","municipio":"Tuxtla Gutiérrez"},{"clave":"chp13","nombre":"Escuela Normal de Licenciatura en Educación Física \"Profr Pedro ReynolOzuna Henning\"","estado":"Chiapas","municipio":"Tuxtla Gutiérrez"},{"clave":"chp07","nombre":"Escuela Normal de Licenciatura en Educación Física de Tapachula","estado":"Chiapas","municipio":"Tapachula"},{"clave":"chp11","nombre":"Escuela Normal de Licenciatura en Educación Preescolar \"Bertha Von Glumery Leyva\"","estado":"Chiapas","municipio":""},{"clave":"chp04","nombre":"Escuela Normal de Licenciatura en Educación Preescolar \"Lic ManuelLarraínzar\"","estado":"Chiapas","municipio":"San Cristóbal de las Casas"},{"clave":"chp08","nombre":"Escuela Normal de Licenciatura en Educación Preescolar \"RosarioCastellanos\"","estado":"Chiapas","municipio":"Tapachula"},{"clave":"chp12","nombre":"Escuela Normal de Licenciatura en Educación Preescolar \"Rosaura ZapataCano\"","estado":"Chiapas","municipio":"Tuxtla Gutiérrez"},{"clave":"chp17","nombre":"Escuela Normal de Licenciatura en Educación Preescolar y Primaria delEstado \"Tonalá\"","estado":"Chiapas","municipio":"Tonalá"},{"clave":"chp01","nombre":"Escuela Normal de Licenciatura en Educación Primaria \"Del Occidente deChiapas\"","estado":"Chiapas","municipio":"Cintalapa"},{"clave":"chp02","nombre":"Escuela Normal de Licenciatura en Educación Primaria \"Dr Manuel VelascoSuárez\"","estado":"Chiapas","municipio":"Huehuetán"},{"clave":"chp09","nombre":"Escuela Normal de Licenciatura en Educación Primaria \"Fray Matías deCórdova\"","estado":"Chiapas","municipio":"Tapachula"},{"clave":"chp19","nombre":"Escuela Normal de Licenciatura en Educación Primaria \"Lic ManuelLarraínzar\"","estado":"Chiapas","municipio":"San Cristóbal de las Casas"},{"clave":"chp16","nombre":"Escuela Normal de Licenciatura en Educación Primaria \"Villaflores\"","estado":"Chiapas","municipio":"Villaflores"},{"clave":"chp14","nombre":"Escuela Normal de Licenciatura en Educación Primaria del Estado (Turnomatutino)","estado":"Chiapas","municipio":"Tuxtla Gutiérrez"},{"clave":"chp20","nombre":"Escuela Normal de Licenciatura en Educación Primaria del Estado (Turnovespertino)","estado":"Chiapas","municipio":"Tuxtla Gutiérrez"},{"clave":"chi02","nombre":"Escuela Normal Experimental \"Miguel Hidalgo\"","estado":"Chihuahua","municipio":"Hidalgo del Parral"},{"clave":"chi07","nombre":"Escuela Normal Particular \"Yermo y Parres\"","estado":"Chihuahua","municipio":""},{"clave":"chi03","nombre":"Escuela Normal Rural \"Ricardo Flores Magón\"","estado":"Chihuahua","municipio":""},{"clave":"chi04","nombre":"Escuela Normal Superior \"Profr José E Medrano R\"","estado":"Chihuahua","municipio":"Chihuahua"},{"clave":"chi05","nombre":"Escuela Normal Superior \"Profr José E Medrano R\" (Unidad Juárez)","estado":"Chihuahua","municipio":"Juárez"},{"clave":"chi08","nombre":"Escuela Normal Superior \"Profr José E Medrano R\" (Unidad Nuevo CasasGrandes)","estado":"Chihuahua","municipio":""},{"clave":"chi06","nombre":"Escuela Normal Superior \"Profr José E Medrano R\" (Unidad Parral)","estado":"Chihuahua","municipio":"Hidalgo del Parral"},{"clave":"chi01","nombre":"Institución Benemérita y Centenaria Escuela Normal del Estado deChihuahua Profesor Luis Urías Belderráin","estado":"Chihuahua","municipio":"Chihuahua"},{"clave":"cdmx02","nombre":"Benemérita Escuela Nacional de Maestros","estado":"Ciudad de México","municipio":""},{"clave":"cdmx01","nombre":"Escuela Nacional para Maestras de Jardines de Niños","estado":"Ciudad de México","municipio":"Álvaro Obregón"},{"clave":"cdmx03","nombre":"Escuela Normal Superior de México","estado":"Ciudad de México","municipio":"Azcapotzalco"},{"clave":"cdmx04","nombre":"Escuela Normal de Especialización","estado":"Ciudad de México","municipio":"Miguel Hidalgo"},{"clave":"cdmx05","nombre":"Escuela Superior de Educación Física","estado":"Ciudad de México","municipio":"Iztacalco"},{"clave":"coh02","nombre":"Benemérita Escuela Normal de Coahuila","estado":"Coahuila","municipio":"Saltillo"},{"clave":"coh07","nombre":"Escuela Normal Experimental","estado":"Coahuila","municipio":"San Juan de Sabinas"},{"clave":"coh01","nombre":"Escuela Normal Ofi cial \"Dora Madero\"","estado":"Coahuila","municipio":"Parras"},{"clave":"coh05","nombre":"Escuela Normal Regional de Especialización del Estado de Coahuila","estado":"Coahuila","municipio":"Saltillo"},{"clave":"coh06","nombre":"Escuela Normal Superior del Estado de Coahuila","estado":"Coahuila","municipio":"Saltillo"},{"clave":"coh03","nombre":"Escuela Normal de Educación Física","estado":"Coahuila","municipio":"Saltillo"},{"clave":"coh04","nombre":"Escuela Normal de Educación Preescolar del Estado de Coahuila","estado":"Coahuila","municipio":"Saltillo"},{"clave":"coh10","nombre":"Escuela Normal de Monclova","estado":"Coahuila","municipio":""},{"clave":"coh08","nombre":"Escuela Normal de Torreón","estado":"Coahuila","municipio":"Torreón"},{"clave":"col02","nombre":"Instituto Superior de Educación Normal del Estado de Colima \"Profr GregorioTorres Quintero\"(Subsede Cuauhtémoc)","estado":"Colima","municipio":""},{"clave":"col03","nombre":"Instituto Superior de Educación Normal del Estado de Colima \"Profr GregorioTorres Quintero\"(Subsede Manzanillo)","estado":"Colima","municipio":""},{"clave":"col04","nombre":"Instituto Superior de Educación Normal del Estado de Colima \"Profr GregorioTorres Quintero\"(Subsede Tecomán)","estado":"Colima","municipio":""},{"clave":"dgo04","nombre":"Benemérita y Centenaria Escuela Normal del Estado de Durango","estado":"Durango","municipio":"Durango"},{"clave":"dgo1c","nombre":"Centro de Actualización del Magisterio de Durango","estado":"Durango","municipio":""},{"clave":"dgo01","nombre":"Escuela Normal Rural \"J Guadalupe Aguilera\"","estado":"Durango","municipio":""},{"clave":"dgo03","nombre":"Escuela Normal Urbana \"Profr Carlos A Carrillo\"","estado":"Durango","municipio":"El Oro"},{"clave":"dgo02","nombre":"Instituto de Estudios Superiores de Educación Normal \"Gral LázaroCárdenas del Río\"","estado":"Durango","municipio":""},{"clave":"mex33","nombre":"Centenaria y Benemérita Escuela Normal para Profesores","estado":"Estado de México","municipio":"Toluca"},{"clave":"mex08","nombre":"Escuela Normal No 1 de Nezahualcóyotl","estado":"Estado de México","municipio":"Nezahualcóyotl"},{"clave":"mex32","nombre":"Escuela Normal No 1 de Toluca","estado":"Estado de México","municipio":"Toluca"},{"clave":"mex09","nombre":"Escuela Normal No 2 de Nezahualcóyotl","estado":"Estado de México","municipio":"Nezahualcóyotl"},{"clave":"mex10","nombre":"Escuela Normal No 3 de Nezahualcóyotl","estado":"Estado de México","municipio":"Nezahualcóyotl"},{"clave":"mex34","nombre":"Escuela Normal No 3 de Toluca","estado":"Estado de México","municipio":"Toluca"},{"clave":"mex11","nombre":"Escuela Normal No 4 de Nezahualcóyotl","estado":"Estado de México","municipio":"Nezahualcóyotl"},{"clave":"mex25","nombre":"Escuela Normal Rural \"Gral Lázaro Cárdenas del Río\"","estado":"Estado de México","municipio":""},{"clave":"mex35","nombre":"Escuela Normal Superior del Estado de México","estado":"Estado de México","municipio":"Toluca"},{"clave":"mex1c","nombre":"Escuela Normal Superior del Valle de México","estado":"Estado de México","municipio":"Tlalnepantla de Baz"},{"clave":"mex2c","nombre":"Escuela Normal Superior del Valle de Toluca","estado":"Estado de México","municipio":"Toluca"},{"clave":"mex01","nombre":"Escuela Normal de Amecameca","estado":"Estado de México","municipio":"Amecameca"},{"clave":"mex02","nombre":"Escuela Normal de Atizapán de Zaragoza","estado":"Estado de México","municipio":"Atizapán de Zaragoza"},{"clave":"mex04","nombre":"Escuela Normal de Atlacomulco","estado":"Estado de México","municipio":"Atlacomulco"},{"clave":"mex05","nombre":"Escuela Normal de Capulhuac","estado":"Estado de México","municipio":"Capulhuac"},{"clave":"mex07","nombre":"Escuela Normal de Chalco","estado":"Estado de México","municipio":"Chalco"},{"clave":"mex12","nombre":"Escuela Normal de Coacalco","estado":"Estado de México","municipio":"Coacalco de Berriozábal"},{"clave":"mex13","nombre":"Escuela Normal de Coatepec Harinas","estado":"Estado de México","municipio":"Coatepec Harinas"},{"clave":"mex14","nombre":"Escuela Normal de Cuautitlán Izcalli","estado":"Estado de México","municipio":"Cuautitlán Izcalli"},{"clave":"mex15","nombre":"Escuela Normal de Ecatepec","estado":"Estado de México","municipio":"Ecatepec de Morelos"},{"clave":"mex03","nombre":"Escuela Normal de Educación Especial del Estado de México","estado":"Estado de México","municipio":"Atizapán de Zaragoza"},{"clave":"mex31","nombre":"Escuela Normal de Educación Física \"Gral Ignacio M Beteta\"","estado":"Estado de México","municipio":"Toluca"},{"clave":"mex16","nombre":"Escuela Normal de Ixtapan de la Sal","estado":"Estado de México","municipio":"Ixtapan de la Sal"},{"clave":"mex17","nombre":"Escuela Normal de Ixtlahuaca","estado":"Estado de México","municipio":""},{"clave":"mex18","nombre":"Escuela Normal de Jilotepec","estado":"Estado de México","municipio":"Jilotepec"},{"clave":"mex06","nombre":"Escuela Normal de Los Reyes Acaquilpan","estado":"Estado de México","municipio":"La Paz"},{"clave":"mex19","nombre":"Escuela Normal de Naucalpan","estado":"Estado de México","municipio":"Naucalpan de Juárez"},{"clave":"mex20","nombre":"Escuela Normal de San Felipe del Progreso","estado":"Estado de México","municipio":"San Felipe del Progreso"},{"clave":"mex30","nombre":"Escuela Normal de Santa Ana Zicatecoyan","estado":"Estado de México","municipio":""},{"clave":"mex28","nombre":"Escuela Normal de Santiago Tianguistenco","estado":"Estado de México","municipio":"Tianguistenco"},{"clave":"mex21","nombre":"Escuela Normal de Sultepec","estado":"Estado de México","municipio":"Sultepec"},{"clave":"mex22","nombre":"Escuela Normal de Tecámac","estado":"Estado de México","municipio":"Tecámac"},{"clave":"mex23","nombre":"Escuela Normal de Tejupilco","estado":"Estado de México","municipio":"Tejupilco"},{"clave":"mex24","nombre":"Escuela Normal de Tenancingo","estado":"Estado de México","municipio":"Tenancingo"},{"clave":"mex26","nombre":"Escuela Normal de Teotihuacan","estado":"Estado de México","municipio":"Teotihuacán"},{"clave":"mex27","nombre":"Escuela Normal de Texcoco","estado":"Estado de México","municipio":"Texcoco"},{"clave":"mex29","nombre":"Escuela Normal de Tlalnepantla","estado":"Estado de México","municipio":"Tlalnepantla de Baz"},{"clave":"mex36","nombre":"Escuela Normal de Valle de Bravo","estado":"Estado de México","municipio":""},{"clave":"mex37","nombre":"Escuela Normal de Zumpango","estado":"Estado de México","municipio":"Zumpango"},{"clave":"mex4c","nombre":"Unidad de Desarrollo Profesional de Tlalnepantla","estado":"Estado de México","municipio":""},{"clave":"gto07","nombre":"Benemérita y Centenaria Escuela Normal Ofi cial de Guanajuato","estado":"Guanajuato","municipio":"Guanajuato"},{"clave":"gto08","nombre":"Centro de Estudios Superiores de Educación Especializada","estado":"Guanajuato","municipio":""},{"clave":"gto09","nombre":"Escuela Normal Ofi cial de Irapuato","estado":"Guanajuato","municipio":"Irapuato"},{"clave":"gto10","nombre":"Escuela Normal Ofi cial de León","estado":"Guanajuato","municipio":"León"},{"clave":"gto06","nombre":"Escuela Normal Superior Ofi cial de Guanajuato (Subsede San José Iturbide)","estado":"Guanajuato","municipio":"San José Iturbide"},{"clave":"gto01","nombre":"Escuela Normal Superior Oficial de Guanajuato","estado":"Guanajuato","municipio":"Guanajuato"},{"clave":"gro03","nombre":"Centenaria Escuela Normal del Estado \"Ignacio Manuel Altamirano\"","estado":"Guerrero","municipio":"Chilpancingo de los Bravo"},{"clave":"gro08","nombre":"Centro Regional de Educación Normal \"Adolfo López Mateos\"","estado":"Guerrero","municipio":"Iguala de la Independencia"},{"clave":"gro1c","nombre":"Centro de Actualización del Magisterio de Acapulco","estado":"Guerrero","municipio":""},{"clave":"gro2c","nombre":"Centro de Actualización del Magisterio de Chilpancingo","estado":"Guerrero","municipio":""},{"clave":"gro3c","nombre":"Centro de Actualización del Magisterio de Iguala","estado":"Guerrero","municipio":""},{"clave":"gro09","nombre":"Escuela Normal \"Vicente Guerrero\"","estado":"Guerrero","municipio":"Teloloapan"},{"clave":"gro07","nombre":"Escuela Normal Preescolar \"Adolfo Viguri Viguri\"","estado":"Guerrero","municipio":"Chilpancingo de los Bravo"},{"clave":"gro06","nombre":"Escuela Normal Regional de Tierra Caliente","estado":"Guerrero","municipio":""},{"clave":"gro05","nombre":"Escuela Normal Regional de la Montaña \"José Vasconcelos\"","estado":"Guerrero","municipio":"Tlapa de Comonfort"},{"clave":"gro01","nombre":"Escuela Normal Rural \"Profr Raúl Isidro Burgos\"","estado":"Guerrero","municipio":""},{"clave":"gro02","nombre":"Escuela Normal Superior de Educación Física","estado":"Guerrero","municipio":""},{"clave":"gro04","nombre":"Escuela Normal Urbana Federal \"Profr Rafael Ramírez\"","estado":"Guerrero","municipio":"Chilpancingo de los Bravo"},{"clave":"hgo03","nombre":"Centro Regional de Educación Normal \"Benito Juárez\"","estado":"Hidalgo","municipio":"Pachuca de Soto"},{"clave":"hgo05","nombre":"Escuela Normal \"Sierra Hidalguense\"","estado":"Hidalgo","municipio":"Tianguistengo"},{"clave":"hgo04","nombre":"Escuela Normal \"Valle del Mezquital\"","estado":"Hidalgo","municipio":""},{"clave":"hgo06","nombre":"Escuela Normal Experimental \"De Las Huastecas\"","estado":"Hidalgo","municipio":"Huejutla de Reyes"},{"clave":"hgo12","nombre":"Escuela Normal Superior Pública del Estado de Hidalgo","estado":"Hidalgo","municipio":"Pachuca de Soto"},{"clave":"jal11","nombre":"Benemérita y Centenaria Escuela Normal de Jalisco","estado":"Jalisco","municipio":"Guadalajara"},{"clave":"jal03","nombre":"Centro Regional de Educación Normal de Cd Guzmán","estado":"Jalisco","municipio":""},{"clave":"jal08","nombre":"Escuela Normal Experimental de \"San Antonio Matute\"","estado":"Jalisco","municipio":""},{"clave":"jal04","nombre":"Escuela Normal Experimental de Colotlán","estado":"Jalisco","municipio":"Colotlán"},{"clave":"jal02","nombre":"Escuela Normal Rural \"Miguel Hidalgo\" de Atequiza","estado":"Jalisco","municipio":"Ixtlahuacán de los Membrillos"},{"clave":"jal06","nombre":"Escuela Normal Superior de Especialidades","estado":"Jalisco","municipio":"Guadalajara"},{"clave":"jal07","nombre":"Escuela Normal Superior de Jalisco","estado":"Jalisco","municipio":"Guadalajara"},{"clave":"jal10","nombre":"Escuela Normal para Educadoras de Arandas","estado":"Jalisco","municipio":"Arandas"},{"clave":"jal01","nombre":"Escuela Normal para Educadoras de Guadalajara","estado":"Jalisco","municipio":"Zapopan"},{"clave":"jal09","nombre":"Escuela Normal para Educadoras de Unión de Tula","estado":"Jalisco","municipio":"Unión de Tula"},{"clave":"jal05","nombre":"Escuela Superior de Educación Física de Jalisco","estado":"Jalisco","municipio":""},{"clave":"mch06","nombre":"Benemérita y Centenaria Escuela Normal Urbana Federal J Jesús RomeroFlores","estado":"Michoacán","municipio":"Morelia"},{"clave":"mch02","nombre":"Centro Regional de Educación Normal Licenciatura en Preescolar deArteaga","estado":"Michoacán","municipio":"Arteaga"},{"clave":"mch01","nombre":"Centro Regional de Educación Normal Primaria de Arteaga","estado":"Michoacán","municipio":""},{"clave":"mch1c","nombre":"Centro de Actualización del Magisterio (Morelia)","estado":"Michoacán","municipio":""},{"clave":"mch12","nombre":"Escuela Normal Indígena de Michoacán","estado":"Michoacán","municipio":"Cherán"},{"clave":"mch07","nombre":"Escuela Normal Rural \"Vasco de Quiroga\"","estado":"Michoacán","municipio":""},{"clave":"mch05","nombre":"Escuela Normal Superior de Michoacán","estado":"Michoacán","municipio":"Morelia"},{"clave":"mch03","nombre":"Escuela Normal de Educación Física","estado":"Michoacán","municipio":""},{"clave":"mch04","nombre":"Escuela Normal para Educadoras de Morelia","estado":"Michoacán","municipio":"Morelia"},{"clave":"mch17","nombre":"Instituto Michoacano de Ciencias de la Educación \"José María Morelos\"Plantel Morelia","estado":"Michoacán","municipio":""},{"clave":"mor01","nombre":"Escuela Normal Rural \"Gral Emiliano Zapata\"","estado":"Morelos","municipio":""},{"clave":"mor02","nombre":"Escuela Normal Urbana Federal Cuautla","estado":"Morelos","municipio":"Cuautla"},{"clave":"nay01","nombre":"Escuela Normal Experimental de Acaponeta","estado":"Nayarit","municipio":"Acaponeta"},{"clave":"nay03","nombre":"Escuela Normal Superior de Nayarit","estado":"Nayarit","municipio":"Tepic"},{"clave":"nay02","nombre":"Instituto Estatal de Educación Normal de Nayarit \"Profr y Lic FranciscoBenítez Silva\"","estado":"Nayarit","municipio":""},{"clave":"nul02","nombre":"Escuela Normal \"Ing Miguel F Martínez\" Centenaria y Benemérita","estado":"Nuevo León","municipio":""},{"clave":"nul01","nombre":"Escuela Normal \"Profr Serafín Peña\"","estado":"Nuevo León","municipio":"Montemorelos"},{"clave":"nul05","nombre":"Escuela Normal Pablo Livas","estado":"Nuevo León","municipio":"Sabinas Hidalgo"},{"clave":"nul04","nombre":"Escuela Normal Superior \"Profr Moisés Sáenz Garza\"","estado":"Nuevo León","municipio":"Monterrey"},{"clave":"nul03","nombre":"Escuela Normal de Especialización","estado":"Nuevo León","municipio":"Monterrey"},{"clave":"oax03","nombre":"Centro Regional de Educación Normal de Oaxaca","estado":"Oaxaca","municipio":"Oaxaca de Juárez"},{"clave":"oax08","nombre":"Centro Regional de Educación Normal de Río Grande","estado":"Oaxaca","municipio":"Villa de Tututepec"},{"clave":"oax12","nombre":"Escuela Normal Bilingüe e Intercultural de Oaxaca","estado":"Oaxaca","municipio":""},{"clave":"oax07","nombre":"Escuela Normal Experimental \"Presidente Lázaro Cárdenas\"","estado":"Oaxaca","municipio":"Putla Villa de Guerrero"},{"clave":"oax09","nombre":"Escuela Normal Experimental \"Presidente Venustiano Carranza\"","estado":"Oaxaca","municipio":"San Juan Cacahuatepec"},{"clave":"oax01","nombre":"Escuela Normal Experimental Huajuapan","estado":"Oaxaca","municipio":"Heroica Ciudad de Huajuapan de León"},{"clave":"oax11","nombre":"Escuela Normal Experimental de Teposcolula","estado":"Oaxaca","municipio":"San Pedro y San Pablo Teposcolula"},{"clave":"oax10","nombre":"Escuela Normal Rural Vanguardia","estado":"Oaxaca","municipio":"Villa de Tamazulápam del Progreso"},{"clave":"oax02","nombre":"Escuela Normal Urbana Federal del Istmo","estado":"Oaxaca","municipio":"Ciudad Ixtepec"},{"clave":"oax05","nombre":"Escuela Normal de Educación Especial","estado":"Oaxaca","municipio":"Oaxaca de Juárez"},{"clave":"oax04","nombre":"Escuela Normal de Educación Preescolar de Oaxaca","estado":"Oaxaca","municipio":"Oaxaca de Juárez"},{"clave":"pue03","nombre":"Benemérito Instituto Normal del Estado \"Gral Juan Crisóstomo Bonilla\"","estado":"Puebla","municipio":""},{"clave":"pue02","nombre":"Escuela Normal \"Profr Fidel Meza y Sánchez\"","estado":"Puebla","municipio":"Huauchinango"},{"clave":"pue01","nombre":"Escuela Normal Experimental \"Profr Darío Rodríguez Cruz\"","estado":"Puebla","municipio":"Acatlán"},{"clave":"pue14","nombre":"Escuela Normal Ofi cial \"Lic Benito Juárez\"","estado":"Puebla","municipio":"Zacatlán"},{"clave":"pue18","nombre":"Escuela Normal Primaria Ofi cial \"Profr Jesús Merino Nieto\"","estado":"Puebla","municipio":"Ixcaquixtla"},{"clave":"pue13","nombre":"Escuela Normal Rural \"Carmen Serdán\"","estado":"Puebla","municipio":"Teteles de Avila Castillo"},{"clave":"pue12","nombre":"Escuela Normal Superior Federalizada del Estado de Puebla","estado":"Puebla","municipio":"Puebla"},{"clave":"pue4r","nombre":"Escuela Normal Superior de Tehuacán","estado":"Puebla","municipio":"Tehuacán"},{"clave":"pue04","nombre":"Escuela Normal Superior del Estado","estado":"Puebla","municipio":"Puebla"},{"clave":"pue1c","nombre":"Instituto Jaime Torres Bodet","estado":"Puebla","municipio":""},{"clave":"pue15","nombre":"Normal Ofi cial \"Profr Luis Casarrubias Ibarra\"","estado":"Puebla","municipio":"Chiautla"},{"clave":"qro01","nombre":"Centenaria y Benemérita Escuela Normal del Estado de Querétaro \"AndrésBalvanera\"","estado":"Queretaro","municipio":"Querétaro"},{"clave":"qro03","nombre":"Centenaria y Benemérita Escuela Normal del Estado de Querétaro \"AndrésBalvanera\" (Unidad Jalpan)","estado":"Queretaro","municipio":"Jalpan de Serra"},{"clave":"qro02","nombre":"Centenaria y Benemérita Escuela Normal del Estado de Querétaro \"AndrésBalvanera\" (Unidad San Juan del Río )","estado":"Queretaro","municipio":"San Juan del Río"},{"clave":"qro04","nombre":"Escuela Normal Superior de Querétaro","estado":"Queretaro","municipio":"Querétaro"},{"clave":"qoo05","nombre":"Centro Regional de Educación Normal","estado":"Quintana Roo","municipio":"Felipe Carrillo Puerto"},{"clave":"qoo04","nombre":"Centro Regional de Educación Normal \"Javier Rojo Gómez\"","estado":"Quintana Roo","municipio":"Bacalar"},{"clave":"qoo1c","nombre":"Centro de Actualización del Magisterio","estado":"Quintana Roo","municipio":""},{"clave":"slp03","nombre":"Benemérita y Centenaria Escuela Normal del Estado de San Luis Potosí","estado":"San Luis Potosí","municipio":"San Luis Potosí"},{"clave":"slp01","nombre":"Centro Regional de Educación Normal \"Profra Amina Madera Lauterio\"","estado":"San Luis Potosí","municipio":"Cedral"},{"clave":"slp02","nombre":"Escuela Normal Experimental Normalismo Mexicano","estado":"San Luis Potosí","municipio":"Matehuala"},{"clave":"slp05","nombre":"Escuela Normal de Estudios Superiores del Magisterio Potosino Plantel 1,San Luis Potosí","estado":"San Luis Potosí","municipio":"San Luis Potosí"},{"clave":"slp06","nombre":"Escuela Normal de Estudios Superiores del Magisterio Potosino Plantel 2,Ciudad Valles","estado":"San Luis Potosí","municipio":"Ciudad Valles"},{"clave":"slp07","nombre":"Escuela Normal de Estudios Superiores del Magisterio Potosino Plantel 3,Matehuala","estado":"San Luis Potosí","municipio":"Matehuala"},{"clave":"slp08","nombre":"Escuela Normal de Estudios Superiores del Magisterio Potosino Plantel 4,Río Verde","estado":"San Luis Potosí","municipio":"Rioverde"},{"clave":"slp09","nombre":"Escuela Normal de Estudios Superiores del Magisterio Potosino Plantel 5,Tamazunchale","estado":"San Luis Potosí","municipio":""},{"clave":"slp04","nombre":"Escuela Normal de La Huasteca Potosina","estado":"San Luis Potosí","municipio":"Rayón"},{"clave":"sin03","nombre":"Escuela Normal Experimental de El Fuerte \"Profr Miguel Castillo Cruz\"","estado":"Sinaloa","municipio":""},{"clave":"sin05","nombre":"Escuela Normal Experimental de El Fuerte \"Profr Miguel Castillo Cruz\"(Extensión Mazatlán)","estado":"Sinaloa","municipio":""},{"clave":"sin01","nombre":"Escuela Normal de Especialización del Estado de Sinaloa","estado":"Sinaloa","municipio":""},{"clave":"sin02","nombre":"Escuela Normal de Sinaloa","estado":"Sinaloa","municipio":"Culiacán"},{"clave":"sin04","nombre":"Escuela Normal del Pacífico","estado":"Sinaloa","municipio":""},{"clave":"son06","nombre":"Centro Regional de Educación Normal \"Rafael Ramírez Castañeda\"(Navojoa)","estado":"Sonora","municipio":"Navojoa"},{"clave":"son01","nombre":"Escuela Normal Estatal de Especialización","estado":"Sonora","municipio":"Cajeme"},{"clave":"son02","nombre":"Escuela Normal Rural \"Gral Plutarco Elías Calles\"","estado":"Sonora","municipio":""},{"clave":"son04","nombre":"Escuela Normal Superior de Hermosillo","estado":"Sonora","municipio":"Hermosillo"},{"clave":"son11","nombre":"Escuela Normal Superior de Hermosillo (Subsede Cd Obregón)","estado":"Sonora","municipio":""},{"clave":"son08","nombre":"Escuela Normal Superior de Hermosillo (Subsede Navojoa)","estado":"Sonora","municipio":"Navojoa"},{"clave":"son05","nombre":"Escuela Normal de Educación Física \"Profr Emilio Miramontes Nájera\"","estado":"Sonora","municipio":"Hermosillo"},{"clave":"son03","nombre":"Escuela Normal del Estado \"Profr Jesús Manuel Bustamante Mungarro\"","estado":"Sonora","municipio":"Hermosillo"},{"clave":"tab02","nombre":"Escuela Normal \"Graciela Pintado de Madrazo\"","estado":"Tabasco","municipio":"Centro"},{"clave":"tab03","nombre":"Escuela Normal \"Pablo García Ávalos\"","estado":"Tabasco","municipio":"Centro"},{"clave":"tab01","nombre":"Escuela Normal Urbana de Balancán","estado":"Tabasco","municipio":"Balancán"},{"clave":"tab08","nombre":"Escuela Normal de Educación Primaria \"Rosario María Gutiérrez Eskildsen\"","estado":"Tabasco","municipio":"Centro"},{"clave":"tab04","nombre":"Escuela Normal del Estado \"Rosario María Gutiérrez Eskildsen\"","estado":"Tabasco","municipio":"Centro"},{"clave":"tab1c","nombre":"Instituto de Educación Superior del Magisterio (IESMA)","estado":"Tabasco","municipio":"Nacajuca"},{"clave":"tam01","nombre":"Benemérita Escuela Normal Federalizada de Tamaulipas","estado":"Tamaulipas","municipio":"Victoria"},{"clave":"tam1c","nombre":"Centro de Actualización del Magisterio (Victoria)","estado":"Tamaulipas","municipio":""},{"clave":"tam04","nombre":"Escuela Normal \"Lic J Guadalupe Mainero\"","estado":"Tamaulipas","municipio":"Matamoros"},{"clave":"tam03","nombre":"Escuela Normal \"Profr y Gral Alberto Carrera Torres\"","estado":"Tamaulipas","municipio":"Jaumave"},{"clave":"tam02","nombre":"Escuela Normal Federal de Educadoras \"Mtra Estefanía Castañeda\"","estado":"Tamaulipas","municipio":"Victoria"},{"clave":"tam07","nombre":"Escuela Normal Rural de Tam Maestro Lauro Aguirre","estado":"Tamaulipas","municipio":""},{"clave":"tam06","nombre":"Escuela Normal Urbana Cuauhtémoc","estado":"Tamaulipas","municipio":"Nuevo Laredo"},{"clave":"tla1c","nombre":"Centro de Actualización del Magisterio","estado":"Tlaxcala","municipio":""},{"clave":"tla05","nombre":"Escuela Normal Estatal \"Profra Leonarda Gómez Blanco\"","estado":"Tlaxcala","municipio":"Santa Apolonia Teacalco"},{"clave":"tla01","nombre":"Escuela Normal Preescolar \"Profra Francisca Madera Martínez\"","estado":"Tlaxcala","municipio":"Panotla"},{"clave":"tla02","nombre":"Escuela Normal Rural \"Lic Benito Juárez\"","estado":"Tlaxcala","municipio":"Panotla"},{"clave":"tla04","nombre":"Escuela Normal Urbana Federal \"Lic Emilio Sánchez Piedras\"","estado":"Tlaxcala","municipio":"Tlaxcala"},{"clave":"ver05","nombre":"Benemérita Escuela Normal Veracruzana \"Enrique C Rébsamen\"","estado":"Veracruz","municipio":"Xalapa"},{"clave":"ver03","nombre":"Centro Regional de Educación Normal \"Dr Gonzalo Aguirre Beltrán\"","estado":"Veracruz","municipio":"Tuxpan"},{"clave":"ver01","nombre":"Centro de Estudios Superiores de Educación Rural \"Luis Hidalgo Monroy\"","estado":"Veracruz","municipio":""},{"clave":"ver02","nombre":"Escuela Normal \"Juan Enríquez\"","estado":"Veracruz","municipio":"Tlacotalpan"},{"clave":"ver06","nombre":"Escuela Normal Superior Veracruzana \"Dr Manuel Suárez Trujillo\"","estado":"Veracruz","municipio":"Xalapa"},{"clave":"yuc07","nombre":"Benemérita y Centenaria Escuela Normal de Educación Primaria \"RodolfoMenéndez de la Peña\"","estado":"Yucatan","municipio":""},{"clave":"yuc09","nombre":"Escuela Normal \"Juan de Dios Rodríguez Heredia\"","estado":"Yucatan","municipio":"Valladolid"},{"clave":"yuc03","nombre":"Escuela Normal Superior de Yucatán \"Profr Antonio Betancourt Pérez\"","estado":"Yucatan","municipio":"Mérida"},{"clave":"yuc01","nombre":"Escuela Normal de Dzidzantún","estado":"Yucatan","municipio":"Dzidzantún"},{"clave":"yuc02","nombre":"Escuela Normal de Educación Preescolar","estado":"Yucatan","municipio":"Mérida"},{"clave":"yuc08","nombre":"Escuela Normal de Ticul","estado":"Yucatan","municipio":"Ticul"},{"clave":"zac1c","nombre":"Centro de Actualización del Magisterio","estado":"Zacatecas","municipio":""},{"clave":"zac04","nombre":"Escuela Normal \"Manuel Ávila Camacho\"","estado":"Zacatecas","municipio":"Zacatecas"},{"clave":"zac02","nombre":"Escuela Normal Experimental \"Rafael Ramírez Castañeda\"","estado":"Zacatecas","municipio":"General Francisco R. Murguía"},{"clave":"zac01","nombre":"Escuela Normal Experimental \"Salvador Varela Reséndiz\"","estado":"Zacatecas","municipio":""},{"clave":"zac03","nombre":"Escuela Normal Rural \"General Matías Ramos Santos\"","estado":"Zacatecas","municipio":"Loreto"}];
+
+const escuelaSelect = document.getElementById('escuela-select');
+const chip = document.getElementById('escuela-chip');
+const chipClave = document.getElementById('chip-clave');
+const chipNombre = document.getElementById('chip-nombre');
+let escuelaSeleccionada = null;
+
+// ⚠️ Pega aquí la URL de tu implementación de Apps Script (termina en /exec).
+// Instrucciones completas en apps_script_backend.gs
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyrVPWJgiVUvvET13w_Cv-5q8ebDy6zfLdP9zZUso6s8qNbQM6qETGb7nnrFT0TwKsU/exec';
+
+// Agrupar por estado y poblar el <select> (mismo orden en que aparece el catálogo)
+const porEstado = {};
+catalogo.forEach(c => {
+  if(!porEstado[c.estado]) porEstado[c.estado] = [];
+  porEstado[c.estado].push(c);
+});
+Object.keys(porEstado).sort().forEach(estado=>{
+  const group = document.createElement('optgroup');
+  group.label = estado;
+  porEstado[estado]
+    .slice()
+    .sort((a,b)=>a.nombre.localeCompare(b.nombre))
+    .forEach(c=>{
+      const opt = document.createElement('option');
+      opt.value = c.clave;
+      opt.textContent = c.nombre;
+      group.appendChild(opt);
+    });
+  escuelaSelect.appendChild(group);
+});
+
+escuelaSelect.addEventListener('change', ()=>{
+  const m = catalogo.find(c => c.clave === escuelaSelect.value);
+  if(!m) return;
+  escuelaSeleccionada = m;
+  chipClave.textContent = m.clave;
+  chipNombre.textContent = m.nombre;
+  chip.classList.add('active');
+});
+
+// ---- enlaces dinámicos ----
+const linkList = document.getElementById('link-list');
+function addLinkRow(){
+  const row = document.createElement('div');
+  row.className = 'link-row';
+  row.style.marginBottom = '8px';
+  row.innerHTML = `
+    <input type="text" class="link-label" placeholder="Plataforma">
+    <input type="text" class="link-url" placeholder="https://…">
+    <button type="button" class="remove-link">×</button>
+  `;
+  row.querySelector('.remove-link').addEventListener('click', ()=> row.remove());
+  linkList.appendChild(row);
+}
+addLinkRow();
+document.getElementById('add-link-btn').addEventListener('click', addLinkRow);
+
+// ---- envío real a Google Sheets (vía Apps Script) ----
+document.getElementById('registro-form').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+
+  if(!escuelaSeleccionada){
+    alert('Por favor selecciona tu escuela de la lista antes de enviar.');
+    return;
+  }
+
+  if(APPS_SCRIPT_URL.indexOf('PEGA_AQUI') > -1){
+    alert('Este formulario todavía no tiene configurada la URL de Apps Script. Revisa apps_script_backend.gs para configurarlo.');
+    return;
+  }
+
+  const links = Array.from(document.querySelectorAll('.link-row')).map(row=>({
+    label: row.querySelector('.link-label').value.trim(),
+    url: row.querySelector('.link-url').value.trim()
+  })).filter(l => l.url);
+
+  const enlaces = links.map(l => l.label ? `${l.label}: ${l.url}` : l.url).join(' | ');
+
+  const payload = new URLSearchParams({
+    clave: escuelaSeleccionada.clave,
+    escuela: escuelaSeleccionada.nombre,
+    estado: escuelaSeleccionada.estado,
+    programa: document.getElementById('programa-input').value.trim(),
+    contacto: document.getElementById('contacto-input').value.trim(),
+    correo: document.getElementById('correo-input').value.trim(),
+    enlaces: enlaces
+  });
+
+  const submitBtn = document.getElementById('submit-btn');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Enviando…';
+
+  try{
+    // 'no-cors' porque Apps Script no siempre responde con headers CORS;
+    // no podemos leer la respuesta, pero si el fetch no lanza error,
+    // asumimos que el envío llegó.
+    await fetch(APPS_SCRIPT_URL, { method:'POST', mode:'no-cors', body: payload });
+    document.getElementById('form-view').style.display = 'none';
+    document.getElementById('confirmacion').classList.add('active');
+  }catch(err){
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Enviar registro';
+    alert('No se pudo enviar el registro. Revisa tu conexión a internet e intenta de nuevo.');
+  }
+});
+</script>
+</body>
+</html>

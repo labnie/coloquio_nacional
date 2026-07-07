@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Mapa de Experiencias Radiales Normalistas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,800;1,9..144,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  :root{
+    --ink:#FFFFFF;
+    --panel:#FFFFFF;
+    --panel-2:#F2EFEA;
+    --paper:#161A1D;
+    --amber:#9B2247;
+    --amber-dim:#611232;
+    --teal:#1E5B4F;
+    --teal-bright:#1E5B4F;
+    --line:#DEDAD2;
+    --muted:#5A5650;
+    --gold:#A57F2C;
+    --radius:8px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;font-family:"Noto Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;background:var(--ink);color:var(--paper);}
+  .display{font-family:"Fraunces",Georgia,serif;font-weight:700;font-style:italic;font-optical-sizing:auto;letter-spacing:0.1px;}
+  #app{display:flex;height:100vh;overflow:hidden;}
+
+  /* ---------- Sidebar ---------- */
+  #sidebar{
+    width:340px;
+    flex-shrink:0;
+    background:var(--panel);
+    border-right:1px solid var(--line);
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+  }
+  #sidebar-header{
+    padding:22px 18px 16px;
+    background:var(--amber);
+    color:#fff;
+  }
+  .eyebrow{
+    font-family:"Noto Sans",sans-serif;
+    font-size:11px;letter-spacing:1.5px;color:var(--gold);text-transform:uppercase;font-weight:700;
+    display:flex;align-items:center;gap:7px;
+  }
+  .gold-rule{width:36px;height:3px;background:var(--gold);border:none;margin:10px 0 12px;}
+  .dial-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);}
+  #sidebar-header h1{font-size:26px;margin:8px 0 4px;line-height:1.2;color:#fff;}
+  #sidebar-header p{font-size:12px;color:rgba(255,255,255,0.78);margin:0;line-height:1.4;}
+  .event-name{font-size:10.5px !important;letter-spacing:.3px;}
+
+  .select-wrap{margin-top:12px;}
+  .select-wrap label{
+    display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;
+    color:rgba(255,255,255,0.7);margin-bottom:5px;font-weight:700;
+  }
+  .select-wrap select{
+    width:100%;background:#fff;color:var(--paper);border:1px solid rgba(255,255,255,0.4);
+    border-radius:7px;padding:9px 10px;font-size:13px;font-family:inherit;
+  }
+  .select-wrap select:disabled{opacity:.6;cursor:not-allowed;}
+  .select-wrap + .select-wrap{margin-top:10px;}
+
+  #cta-formulario{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    margin:16px 18px 0;padding:12px 14px;
+    background:var(--teal);color:#fff;text-decoration:none;
+    border-radius:8px;font-size:13px;font-weight:700;
+  }
+  #cta-formulario:hover{background:#164a41;}
+  #cta-formulario svg{flex-shrink:0;}
+
+  .tabs{display:flex;margin:16px 18px 0;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+  .tab-btn{flex:1;background:var(--panel-2);color:var(--muted);border:none;padding:9px 6px;font-size:11.5px;font-weight:600;letter-spacing:.3px;cursor:pointer;text-transform:uppercase;}
+  .tab-btn.active{background:var(--amber);color:#FFFFFF;}
+
+  .panel{display:none;flex:1;overflow-y:auto;padding:14px 18px 20px;}
+  .panel.active{display:block;}
+
+  .state-row{
+    display:flex;align-items:center;gap:9px;padding:7px 6px;border-radius:6px;cursor:pointer;font-size:13px;
+  }
+  .state-row:hover{background:var(--panel-2);}
+  .state-row input{accent-color:var(--amber);}
+  .state-name{flex:1;}
+  .state-count{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;color:var(--muted);}
+  .state-count b{color:var(--teal-bright);font-weight:600;}
+
+  .highlight-item{
+    padding:10px 10px;border-radius:8px;margin-bottom:8px;background:var(--panel-2);
+    cursor:pointer;border:1px solid transparent;
+  }
+  .highlight-item:hover{border-color:var(--amber-dim);}
+  .highlight-item .h-name{font-size:13px;font-weight:600;line-height:1.3;color:var(--paper);}
+  .highlight-item .h-meta{font-size:11px;color:var(--muted);margin-top:3px;}
+  .highlight-item .h-pill{
+    display:inline-flex;align-items:center;gap:5px;margin-top:6px;font-size:10px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--teal-bright);
+    background:rgba(95,187,174,0.12);padding:3px 7px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px;
+  }
+  .h-pill .pd{width:6px;height:6px;border-radius:50%;background:currentColor;}
+
+  #sidebar-footer{padding:10px 18px;border-top:1px solid var(--line);font-size:10.5px;color:#6B655C;}
+
+  #audio-hidden-frame{position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;}
+
+  #map-logo-wrap{
+    position:absolute;bottom:16px;left:16px;z-index:900;
+    background:#fff;border-radius:10px;padding:10px 14px;
+    box-shadow:0 4px 16px rgba(0,0,0,0.3);
+    display:flex;align-items:center;justify-content:center;
+  }
+  #map-logo{
+    max-width:220px;max-height:110px;
+    display:block;
+  }
+
+  #audio-toggle{
+    position:absolute;bottom:20px;right:20px;z-index:1000;
+    width:52px;height:52px;border-radius:50%;
+    background:var(--amber);border:none;cursor:pointer;
+    box-shadow:0 4px 16px rgba(0,0,0,0.35);
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .15s ease;
+  }
+  #audio-toggle:hover{transform:scale(1.06);}
+  #audio-toggle svg{width:20px;height:20px;fill:#fff;}
+  #audio-toggle .icon-pause{display:none;}
+  #audio-toggle.playing .icon-play{display:none;}
+  #audio-toggle.playing .icon-pause{display:block;}
+
+  /* ---------- Map area ---------- */
+  #map-wrap{flex:1;position:relative;}
+  #map{width:100%;height:100%;background:#111;}
+  #basemap-control{
+    position:absolute;top:14px;right:14px;z-index:1000;
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:6px 8px;font-size:12px;color:var(--paper);
+    display:flex;align-items:center;gap:6px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.35);
+  }
+  #basemap-control select{background:var(--panel-2);color:var(--paper);border:1px solid var(--line);border-radius:6px;padding:5px 7px;font-size:12px;}
+
+  .leaflet-popup-content-wrapper{background:var(--panel);color:var(--paper);border-radius:10px;border:1px solid var(--line);}
+  .leaflet-popup-tip{background:var(--panel);}
+  .popup-title{font-weight:700;font-size:14px;margin-bottom:4px;}
+  .popup-meta{font-size:12px;color:var(--muted);margin-bottom:6px;}
+  .popup-table td{padding:2px 0;font-size:12px;vertical-align:top;}
+  .popup-table td.k{color:var(--muted);padding-right:8px;white-space:nowrap;}
+  .popup-links{margin-top:8px;display:flex;flex-direction:column;gap:5px;}
+  .popup-links a{
+    color:var(--teal-bright);text-decoration:none;font-size:12px;font-weight:600;
+    display:inline-flex;align-items:center;gap:5px;
+  }
+  .popup-links a:hover{text-decoration:underline;}
+  .popup-empty{font-size:11.5px;color:var(--muted);font-style:italic;margin-top:6px;}
+
+  @media (prefers-reduced-motion: reduce){.dial-dot,.h-pill .pd{animation:none;}}
+
+  @media (max-width:820px){
+    #app{flex-direction:column;}
+    #sidebar{width:100%;height:46%;border-right:none;border-bottom:1px solid var(--line);}
+    #map-wrap{height:54%;}
+  }
+
+  @media (max-width:600px){
+    #sidebar{height:50vh;}
+    #map-wrap{height:50vh;}
+    #sidebar-header{padding:16px 14px 12px;}
+    #sidebar-header h1{font-size:21px;}
+    .event-name{font-size:10px !important;}
+    #cta-formulario{margin:12px 14px 0;padding:11px 12px;font-size:12.5px;}
+    .tabs{margin:12px 14px 0;}
+    .panel{padding:12px 14px 16px;}
+    #basemap-control{top:8px;right:8px;padding:5px 7px;font-size:11px;}
+    #basemap-control select{font-size:11px;padding:4px 5px;}
+    #audio-toggle{width:44px;height:44px;bottom:14px;right:14px;}
+    #audio-toggle svg{width:17px;height:17px;}
+    #map-logo-wrap{padding:7px 10px;bottom:14px;left:14px;}
+    #map-logo{max-width:130px;max-height:65px;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="sidebar">
+    <div id="sidebar-header">
+      <div class="eyebrow"><span class="dial-dot"></span> Mapa interactivo</div>
+      <h1 class="display">Tejiendo redes radiales normalistas</h1>
+      <p class="event-name">Coloquio Nacional de Experiencias Radiales en comunidades normalistas</p>
+      <div class="select-wrap">
+        <label for="estado-select">1. Selecciona un estado</label>
+        <select id="estado-select">
+          <option value="">— Selecciona un estado —</option>
+        </select>
+      </div>
+      <div class="select-wrap">
+        <label for="escuela-select">2. Selecciona tu escuela</label>
+        <select id="escuela-select" disabled>
+          <option value="">— Primero selecciona un estado —</option>
+        </select>
+      </div>
+    </div>
+
+    <a href="formulario_registro.html" id="cta-formulario">
+      <span>Registra la experiencia radial de tu escuela</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+
+    <iframe id="audio-hidden-frame" scrolling="no" frameborder="no" allow="autoplay" tabindex="-1"
+      src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Ftito-fernando-pineda-verdugo-785050046%2F01_maestra-mirna_locus-normalista&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false">
+    </iframe>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="estados">Por estado</button>
+      <button class="tab-btn" data-tab="destacadas">Con producción</button>
+    </div>
+    <div class="panel active" id="panel-estados"></div>
+    <div class="panel" id="panel-destacadas"></div>
+    <div id="sidebar-footer">Diseño del Laboratorio Normalista de Investigación Educativa de la Escuela Normal Superior del Estado de Baja California Sur "Profr. Enrique Estrada Lucero"</div>
+  </div>
+  <div id="map-wrap">
+    <div id="basemap-control">
+      <span>Capa:</span>
+      <select id="basemap-select">
+        <option value="sat" selected>Satélite</option>
+        <option value="osm">Calles</option>
+        <option value="topo">Topográfico</option>
+      </select>
+    </div>
+    <div id="map"></div>
+    <div id="map-logo-wrap">
+      <img id="map-logo" src="https://github.com/labnie/coloquio_nacional/blob/main/Logos%20oficiales_Web.png?raw=true" alt="Logotipo del Coloquio Nacional de Experiencias Radiales en comunidades normalistas">
+    </div>
+    <button id="audio-toggle" title="Reproducir/pausar audio destacado" aria-label="Reproducir o pausar audio destacado">
+      <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+    </button>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://w.soundcloud.com/player/api.js"></script>
+<script>
+const baseData = {"type":"FeatureCollection","name":"NormalesdeMxico_1","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:OGC:1.3:CRS84"}},"features":[{"type":"Feature","properties":{"municipio":"Tijuana","localidad":"Tijuana","Clave_DGES":"bca09","Esc_norm_1":"Escuela Normal Fronteriza Tijuana","Estado":"Baja California"},"geometry":{"type":"Point","coordinates":[-116.92839811987727,32.48098349978875]}},{"type":"Feature","properties":{"municipio":"Mexicali","localidad":"Nuevo León","Clave_DGES":"bca01","Esc_norm_1":"Escuela Normal Experimental \"Mtro Rafael Ramírez\"","Estado":"Baja California"},"geometry":{"type":"Point","coordinates":[-115.19450745975143,32.400029380051876]}},{"type":"Feature","properties":{"municipio":"Mexicali","localidad":"Benito Juárez (Ejido Tecolotes)","Clave_DGES":"bca07","Esc_norm_1":"Escuela Normal del Valle de Mexicali Ejido Campeche","Estado":"Baja California"},"geometry":{"type":"Point","coordinates":[-115.00217424984174,32.56612523978805]}},{"type":"Feature","properties":{"municipio":"San Quintín","localidad":"San Quintín","Clave_DGES":"bca23","Esc_norm_1":"Benemérita Escuela Normal Estatal, Profesor Jesús Prado Luna, Ext SanQuintín","Estado":"Baja California"},"geometry":{"type":"Point","coordinates":[-115.94586176980482,30.570769070336382]}},{"type":"Feature","properties":{"municipio":"Mexicali","localidad":"Mexicali","Clave_DGES":"bca22","Esc_norm_1":"Normal Estefanía Castañeda y Núñez de Cáceres","Estado":"Baja California"},"geometry":{"type":"Point","coordinates":[-115.51988383976737,32.64907855962787]}},{"type":"Feature","properties":{"municipio":"La Paz","localidad":"La Paz","Clave_DGES":"bcs7r","Esc_norm_1":"Escuela Superior de Cultura Física de Baja California Sur","Estado":"Baja California Sur"},"geometry":{"type":"Point","coordinates":[-110.30336613973554,24.13264270989322]}},{"type":"Feature","properties":{"municipio":"Los Cabos","localidad":"San José del Cabo","Clave_DGES":"bcs04","Esc_norm_1":"Escuela Normal Superior del Estado de Baja California Sur (Extensión LosCabos)","Estado":"Baja California Sur"},"geometry":{"type":"Point","coordinates":[-109.7272803803852,23.108355320341786]}},{"type":"Feature","properties":{"municipio":"Comondú","localidad":"Ciudad Constitución","Clave_DGES":"bcs05","Esc_norm_1":"Escuela Normal Superior del Estado de Baja California Sur (Extensión CdConstitución)","Estado":"Baja California Sur"},"geometry":{"type":"Point","coordinates":[-111.65053307024499,25.037624659950154]}},{"type":"Feature","properties":{"municipio":"Mexicali","localidad":"Mexicali","Clave_DGES":"bca06","Esc_norm_1":"Benemérita Escuela Normal Urbana Nocturna del Estado, Ing José GValenzuela","Estado":"Baja California"},"geometry":{"type":"Point","coordinates":[-115.43127891039336,32.6489995200119]}},{"type":"Feature","properties":{"municipio":"Ensenada","localidad":"Ensenada","Clave_DGES":"bca02","Esc_norm_1":"Benemérita Escuela Normal Estatal, Profesor Jesús Prado Luna","Estado":"Baja California"},"geometry":{"type":"Point","coordinates":[-116.60640072031697,31.884790920264834]}},{"type":"Feature","properties":{"municipio":"Mexicali","localidad":"Mexicali","Clave_DGES":"bca04","Esc_norm_1":"Benemérita Escuela Normal Urbana Federal \"Fronteriza\" de Mexicali","Estado":"Baja California"},"geometry":{"type":"Point","coordinates":[-115.4428443196096,32.63001228024257]}},{"type":"Feature","properties":{"municipio":"Mexicali","localidad":"Mexicali","Clave_DGES":"bca03","Esc_norm_1":"Benemérita Escuela Normal Educadora Rosaura Zapata","Estado":"Baja California"},"geometry":{"type":"Point","coordinates":[-115.44144923999039,32.647925629664144]}},{"type":"Feature","properties":{"municipio":"Loreto","localidad":"Loreto","Clave_DGES":"bcs03","Esc_norm_1":"Centro Regional de Educación Normal \"Marcelo Rubio Ruiz\"","Estado":"Baja California Sur"},"geometry":{"type":"Point","coordinates":[-111.3490898604087,26.007428920208554]}},{"type":"Feature","properties":{"municipio":"Saltillo","localidad":"Saltillo","Clave_DGES":"coh02","Esc_norm_1":"Benemérita Escuela Normal de Coahuila","Estado":"Coahuila"},"geometry":{"type":"Point","coordinates":[-101.00791368007225,25.426801390271976]}},{"type":"Feature","properties":{"municipio":"La Paz","localidad":"La Paz","Clave_DGES":"bcs01","Esc_norm_1":"Benemérita Escuela Normal Urbana \"Profr Domingo Carballo Félix\"","Estado":"Baja California Sur"},"geometry":{"type":"Point","coordinates":[-110.31073528980176,24.148710969735532]}},{"type":"Feature","properties":{"municipio":"Parras","localidad":"Parras de la Fuente","Clave_DGES":"coh01","Esc_norm_1":"Escuela Normal Ofi cial \"Dora Madero\"","Estado":"Coahuila"},"geometry":{"type":"Point","coordinates":[-102.18415408024657,25.436286190055682]}},{"type":"Feature","properties":{"municipio":"Saltillo","localidad":"Saltillo","Clave_DGES":"coh05","Esc_norm_1":"Escuela Normal Regional de Especialización del Estado de Coahuila","Estado":"Coahuila"},"geometry":{"type":"Point","coordinates":[-100.9815201797125,25.430061670110035]}},{"type":"Feature","properties":{"municipio":"San Juan de Sabinas","localidad":"San Juan de Sabinas","Clave_DGES":"coh07","Esc_norm_1":"Escuela Normal Experimental","Estado":"Coahuila"},"geometry":{"type":"Point","coordinates":[-101.30082465023736,27.92268788983432]}},{"type":"Feature","properties":{"municipio":"Saltillo","localidad":"Saltillo","Clave_DGES":"coh03","Esc_norm_1":"Escuela Normal de Educación Física","Estado":"Coahuila"},"geometry":{"type":"Point","coordinates":[-100.97902616992178,25.430723039636632]}},{"type":"Feature","properties":{"municipio":"Torreón","localidad":"Torreón","Clave_DGES":"coh08","Esc_norm_1":"Escuela Normal de Torreón","Estado":"Coahuila"},"geometry":{"type":"Point","coordinates":[-103.41563917001167,25.520925100213276]}},{"type":"Feature","properties":{"municipio":"Saltillo","localidad":"Saltillo","Clave_DGES":"coh04","Esc_norm_1":"Escuela Normal de Educación Preescolar del Estado de Coahuila","Estado":"Coahuila"},"geometry":{"type":"Point","coordinates":[-100.9814849101005,25.430134099708994]}},{"type":"Feature","properties":{"municipio":"Hopelchén","localidad":"Hopelchén","Clave_DGES":"cam11","Esc_norm_1":"Escuela Normal de Licenciatura en Educación Primaria (Módulo Hopelchén)","Estado":"Campeche"},"geometry":{"type":"Point","coordinates":[-89.83871430981753,19.75065832012541]}},{"type":"Feature","properties":{"municipio":"Campeche","localidad":"San Francisco de Campeche","Clave_DGES":"cam06","Esc_norm_1":"Escuela Normal Superior Federal de Campeche","Estado":"Campeche"},"geometry":{"type":"Point","coordinates":[-90.52735297965626,19.824637219831857]}},{"type":"Feature","properties":{"municipio":"Hecelchakán","localidad":"Hecelchakán","Clave_DGES":"cam07","Esc_norm_1":"Escuela Normal Rural \"Justo Sierra Méndez\"","Estado":"Campeche"},"geometry":{"type":"Point","coordinates":[-90.14114134020065,20.16972655024017]}},{"type":"Feature","properties":{"municipio":"Calkiní","localidad":"Calkiní","Clave_DGES":"cam05","Esc_norm_1":"Escuela Normal de Licenciatura en Educación Física","Estado":"Campeche"},"geometry":{"type":"Point","coordinates":[-90.05221980000374,20.374995499642637]}},{"type":"Feature","properties":{"municipio":"Calkiní","localidad":"Calkiní","Clave_DGES":"cam04","Esc_norm_1":"Escuela Normal de Licenciatura en Educación Especial","Estado":"Campeche"},"geometry":{"type":"Point","coordinates":[-90.04616643003669,20.37783754976317]}},{"type":"Feature","properties":{"municipio":"Calkiní","localidad":"Calkiní","Clave_DGES":"cam01","Esc_norm_1":"Escuela Normal de Licenciatura en Educación Primaria de Calkiní","Estado":"Campeche"},"geometry":{"type":"Point","coordinates":[-90.05153448962494,20.37456000024389]}},{"type":"Feature","properties":{"municipio":"Calkiní","localidad":"Calkiní","Clave_DGES":"cam03","Esc_norm_1":"Escuela Normal de Licenciatura en Educación Preescolar \"Profr PastorRodríguez Estrada\"","Estado":"Campeche"},"geometry":{"type":"Point","coordinates":[-90.05200008033938,20.373961829674727]}},{"type":"Feature","properties":{"municipio":"Aguascalientes","localidad":"Aguascalientes","Clave_DGES":"ags01","Esc_norm_1":"Centro Regional de Educación Normal de Aguascalientes","Estado":"Aguascalientes"},"geometry":{"type":"Point","coordinates":[-102.31858309033731,21.850498660185053]}},{"type":"Feature","properties":{"municipio":"Aguascalientes","localidad":"Aguascalientes","Clave_DGES":"ags03","Esc_norm_1":"Escuela Normal Superior Federal de Aguascalientes \"Profr José SantosValdés\"","Estado":"Aguascalientes"},"geometry":{"type":"Point","coordinates":[-102.27411714958674,21.89790159967913]}},{"type":"Feature","properties":{"municipio":"Aguascalientes","localidad":"General José María Morelos y Pavón (Cañada Honda)","Clave_DGES":"ags04","Esc_norm_1":"Escuela Normal Rural \"Justo Sierra Méndez\"","Estado":"Aguascalientes"},"geometry":{"type":"Point","coordinates":[-102.20288975985449,22.000749540159177]}},{"type":"Feature","properties":{"municipio":"Aguascalientes","localidad":"Aguascalientes","Clave_DGES":"ags02","Esc_norm_1":"Escuela Normal de Aguascalientes","Estado":"Aguascalientes"},"geometry":{"type":"Point","coordinates":[-102.28151623988254,21.873453459709424]}},{"type":"Feature","properties":{"municipio":"Chihuahua","localidad":"Chihuahua","Clave_DGES":"chi04","Esc_norm_1":"Escuela Normal Superior \"Profr José E Medrano R\"","Estado":"Chihuahua"},"geometry":{"type":"Point","coordinates":[-106.06969944996962,28.62999776958145]}},{"type":"Feature","properties":{"municipio":"Hidalgo del Parral","localidad":"Hidalgo del Parral","Clave_DGES":"chi06","Esc_norm_1":"Escuela Normal Superior \"Profr José E Medrano R\" (Unidad Parral)","Estado":"Chihuahua"},"geometry":{"type":"Point","coordinates":[-105.65974730029762,26.92778261957227]}},{"type":"Feature","properties":{"municipio":"Juárez","localidad":"Juárez","Clave_DGES":"chi05","Esc_norm_1":"Escuela Normal Superior \"Profr José E Medrano R\" (Unidad Juárez)","Estado":"Chihuahua"},"geometry":{"type":"Point","coordinates":[-106.42134642989379,31.650769889618743]}},{"type":"Feature","properties":{"municipio":"Hidalgo del Parral","localidad":"Hidalgo del Parral","Clave_DGES":"chi02","Esc_norm_1":"Escuela Normal Experimental \"Miguel Hidalgo\"","Estado":"Chihuahua"},"geometry":{"type":"Point","coordinates":[-105.68181448964697,26.9178200495557]}},{"type":"Feature","properties":{"municipio":"Tuxtla Gutiérrez","localidad":"Tuxtla Gutiérrez","Clave_DGES":"chp12","Esc_norm_1":"Escuela Normal de Licenciatura en Educación Preescolar \"Rosaura ZapataCano\"","Estado":"Chiapas"},"geometry":{"type":"Point","coordinates":[-93.0986205595911,16.76059135970354]}},{"type":"Feature","properties":{"municipio":"Saltillo","localidad":"Saltillo","Clave_DGES":"coh06","Esc_norm_1":"Escuela Normal Superior del Estado de Coahuila","Estado":"Coahuila"},"geometry":{"type":"Point","coordinates":[-100.98149281963788,25.43011784985896]}},{"type":"Feature","properties":{"municipio":"Chihuahua","localidad":"Chihuahua","Clave_DGES":"chi01","Esc_norm_1":"Institución Benemérita y Centenaria Escuela Normal del Estado deChihuahua Profesor Luis Urías Belderráin","Estado":"Chihuahua"},"geometry":{"type":"Point","coordinates":[-106.07471034021,28.666024240226534]}},{"type":"Feature","properties":{"municipio":"Tuxtla Gutiérrez","localidad":"Tuxtla Gutiérrez","Clave_DGES":"chp03","Esc_norm_1":"Escuela Normal Rural Mactumactzá","Estado":"Chiapas"},"geometry":{"type":"Point","coordinates":[-93.17898498037249,16.781177979879942]}},{"type":"Feature","properties":{"municipio":"Tuxtla Gutiérrez","localidad":"Tuxtla Gutiérrez","Clave_DGES":"chp15","Esc_norm_1":"Escuela Normal Superior de Chiapas","Estado":"Chiapas"},"geometry":{"type":"Point","coordinates":[-93.11285827009306,16.777413010402142]}},{"type":"Feature","properties":{"municipio":"Tuxtla Chico","localidad":"Tuxtla Chico","Clave_DGES":"chp10","Esc_norm_1":"Escuela Normal Experimental \"La Enseñanza\" e \"Ignacio Manuel Altamirano\"","Estado":"Chiapas"},"geometry":{"type":"Point","coordinates":[-92.1619062101035,14.941669929623629]}},{"type":"Feature","properties":{"municipio":"San Cristóbal de las Casas","localidad":"San Cristóbal de las Casas","Clave_DGES":"chp19","Esc_norm_1":"Escuela Normal de Licenciatura en Educación Primaria \"Lic ManuelLarraínzar\"","Estado":"Chiapas"},"geometry":{"type":"Point","coordinates":[-92.64176353026266,16.746025679941226]}},{"type":"Feature","properties":{"municipio":"Tapachula","localidad":"Tapachula de Córdova y Ordóñez","Clave_DGES":"chp09","Esc_norm_1":"Escuela Normal de Licenciatura en Educación Primaria \"Fray Matías deCórdova\"","Estado":"Chiapas"},"geometry":{"type":"Point","coordinates":[-92.25782701010837,14.92300882989366]}},{"type":"Feature","properties":{"municipio":"Villaflores","localidad":"Villaflores","Clave_DGES":"chp16","Esc_norm_1":"Escuela Normal de Licenciatura en Educación Primaria \"Villaflores\"","Estado":"Chiapas"},"geometry":{"type":"Point","coordinates":[-93.24576865979577,16.24153770959765]}},{"type":"Feature","properties":{"municipio":"Huehuetán","localidad":"Huehuetán","Clave_DGES":"chp02","Esc_norm_1":"Escuela Normal de Licenciatura en Educación Primaria \"Dr Manuel VelascoSuárez\"","Estado":"Chiapas"},"geometry":{"type":"Point","coordinates":[-92.38971866038781,15.015990399937039]}},{"type":"Feature","properties":{"municipio":"San Cristóbal de las Casas","localidad":"San Cristóbal de las Casas","Clave_DGES":"chp04","Esc_norm_1":"Escuela Normal de Licenciatura en Educación Preescolar \"Lic ManuelLarraínzar\"","Estado":"Chiapas"},"geometry":{"type":"Point","coordinates":[-92.6417611497572,16.746042480176357]}},{"type":"Feature","properties":{"municipio":"Tonalá","localidad":"Tonalá","Clave_DGES":"chp17","Esc_norm_1":"Escuela Normal de Licenciatura en Educación Preescolar y Primaria delEstado \"Tonalá\"","Estado":"Chiapas"},"geometry":{"type":"Point","coordinates":[-93.76594872965012,16.099746860029597]}},{"type":"Feature","properties":{"municipio":"Tapachula","localidad":"Tapachula de Córdova y Ordóñez","Clave_DGES":"chp08","Esc_norm_1":"Escuela Normal de Licenciatura en Educación Preescolar \"RosarioCastellanos\"","Estado":"Chiapas"},"geometry":{"type":"Point","coordinates":[-92.28549490016945,14.886652489720689]}},{"type":"Feature","properties":{"municipio":"Tuxtla Gutiérrez","localidad":"Tuxtla Gutiérrez","Clave_DGES":"chp14","Esc_norm_1":"Escuela Normal de Licenciatura en Educación Primaria del Estado (Turnomatutino)","Estado":"Chiapas"},"geometry":{"type":"Point","coordinates":[-93.10388043973046,16.76856616000032]}},{"type":"Feature","properties":{"municipio":"Tuxtla Gutiérrez","localidad":"Tuxtla Gutiérrez","Clave_DGES":"chp20","Esc_norm_1":"Escuela Normal de Licenciatura en Educación Primaria del Estado (Turnovespertino)","Estado":"Chiapas"},"geometry":{"type":"Point","coordinates":[-93.10388140020643,16.76856409965353]}},{"type":"Feature","properties":{"municipio":"Cintalapa","localidad":"Cintalapa de Figueroa","Clave_DGES":"chp01","Esc_norm_1":"Escuela Normal de Licenciatura en Educación Primaria \"Del Occidente deChiapas\"","Estado":"Chiapas"},"geometry":{"type":"Point","coordinates":[-93.72951286962319,16.68405111976341]}},{"type":"Feature","properties":{"municipio":"Tapachula","localidad":"Tapachula de Córdova y Ordóñez","Clave_DGES":"chp07","Esc_norm_1":"Escuela Normal de Licenciatura en Educación Física de Tapachula","Estado":"Chiapas"},"geometry":{"type":"Point","coordinates":[-92.28965861015672,14.869034949803165]}},{"type":"Feature","properties":{"municipio":"Tuxtla Gutiérrez","localidad":"Tuxtla Gutiérrez","Clave_DGES":"chp13","Esc_norm_1":"Escuela Normal de Licenciatura en Educación Física \"Profr Pedro ReynolOzuna Henning\"","Estado":"Chiapas"},"geometry":{"type":"Point","coordinates":[-93.1252453799703,16.775028170213943]}},{"type":"Feature","properties":{"municipio":"Iztacalco","localidad":"Iztacalco","Clave_DGES":"cdmx05","Esc_norm_1":"Escuela Superior de Educación Física","Estado":"Ciudad de México"},"geometry":{"type":"Point","coordinates":[-99.09836925993335,19.40650624966372]}},{"type":"Feature","properties":{"municipio":"Álvaro Obregón","localidad":"Álvaro Obregón","Clave_DGES":"cdmx01","Esc_norm_1":"Escuela Nacional para Maestras de Jardines de Niños","Estado":"Ciudad de México"},"geometry":{"type":"Point","coordinates":[-99.18726065035867,19.361154170028954]}},{"type":"Feature","properties":{"municipio":"Azcapotzalco","localidad":"Azcapotzalco","Clave_DGES":"cdmx03","Esc_norm_1":"Escuela Normal Superior de México","Estado":"Ciudad de México"},"geometry":{"type":"Point","coordinates":[-99.20642256994563,19.498464009906172]}},{"type":"Feature","properties":{"municipio":"Miguel Hidalgo","localidad":"Miguel Hidalgo","Clave_DGES":"cdmx04","Esc_norm_1":"Escuela Normal de Especialización","Estado":"Ciudad de México"},"geometry":{"type":"Point","coordinates":[-99.20523288019325,19.43070242028051]}},{"type":"Feature","properties":{"municipio":"El Oro","localidad":"Santa María del Oro","Clave_DGES":"dgo03","Esc_norm_1":"Escuela Normal Urbana \"Profr Carlos A Carrillo\"","Estado":"Durango"},"geometry":{"type":"Point","coordinates":[-105.36978237965309,25.95200425019607]}},{"type":"Feature","properties":{"municipio":"Durango","localidad":"Victoria de Durango","Clave_DGES":"dgo04","Esc_norm_1":"Benemérita y Centenaria Escuela Normal del Estado de Durango","Estado":"Durango"},"geometry":{"type":"Point","coordinates":[-104.68611158008531,24.02915973023744]}},{"type":"Feature","properties":{"municipio":"Guanajuato","localidad":"Guanajuato","Clave_DGES":"gto07","Esc_norm_1":"Benemérita y Centenaria Escuela Normal Ofi cial de Guanajuato","Estado":"Guanajuato"},"geometry":{"type":"Point","coordinates":[-101.24976363018737,21.008376460405373]}},{"type":"Feature","properties":{"municipio":"Irapuato","localidad":"Irapuato","Clave_DGES":"gto09","Esc_norm_1":"Escuela Normal Ofi cial de Irapuato","Estado":"Guanajuato"},"geometry":{"type":"Point","coordinates":[-101.34994547020727,20.654012019738957]}},{"type":"Feature","properties":{"municipio":"Guanajuato","localidad":"Guanajuato","Clave_DGES":"gto01","Esc_norm_1":"Escuela Normal Superior Oficial de Guanajuato","Estado":"Guanajuato"},"geometry":{"type":"Point","coordinates":[-101.27853561972302,21.012877929672754]}},{"type":"Feature","properties":{"municipio":"San José Iturbide","localidad":"San José Iturbide","Clave_DGES":"gto06","Esc_norm_1":"Escuela Normal Superior Ofi cial de Guanajuato (Subsede San José Iturbide)","Estado":"Guanajuato"},"geometry":{"type":"Point","coordinates":[-100.38530024011396,21.00007951036116]}},{"type":"Feature","properties":{"municipio":"León","localidad":"León de los Aldama","Clave_DGES":"gto10","Esc_norm_1":"Escuela Normal Ofi cial de León","Estado":"Guanajuato"},"geometry":{"type":"Point","coordinates":[-101.6666124899744,21.147467939993476]}},{"type":"Feature","properties":{"municipio":"Huejutla de Reyes","localidad":"Huejutla de Reyes","Clave_DGES":"hgo06","Esc_norm_1":"Escuela Normal Experimental \"De Las Huastecas\"","Estado":"Hidalgo"},"geometry":{"type":"Point","coordinates":[-98.40923089978617,21.13576461974145]}},{"type":"Feature","properties":{"municipio":"Tianguistengo","localidad":"Tianguistengo","Clave_DGES":"hgo05","Esc_norm_1":"Escuela Normal \"Sierra Hidalguense\"","Estado":"Hidalgo"},"geometry":{"type":"Point","coordinates":[-98.63403313032467,20.72837180031837]}},{"type":"Feature","properties":{"municipio":"Pachuca de Soto","localidad":"Pachuca de Soto","Clave_DGES":"hgo12","Esc_norm_1":"Escuela Normal Superior Pública del Estado de Hidalgo","Estado":"Hidalgo"},"geometry":{"type":"Point","coordinates":[-98.78603859030864,20.079298400101152]}},{"type":"Feature","properties":{"municipio":"Chilpancingo de los Bravo","localidad":"Chilpancingo de los Bravo","Clave_DGES":"gro03","Esc_norm_1":"Centenaria Escuela Normal del Estado \"Ignacio Manuel Altamirano\"","Estado":"Guerrero"},"geometry":{"type":"Point","coordinates":[-99.50226089002803,17.53637249039815]}},{"type":"Feature","properties":{"municipio":"Chilpancingo de los Bravo","localidad":"Chilpancingo de los Bravo","Clave_DGES":"gro07","Esc_norm_1":"Escuela Normal Preescolar \"Adolfo Viguri Viguri\"","Estado":"Guerrero"},"geometry":{"type":"Point","coordinates":[-99.49326423955296,17.535017480072725]}},{"type":"Feature","properties":{"municipio":"Tlapa de Comonfort","localidad":"Tlapa de Comonfort","Clave_DGES":"gro05","Esc_norm_1":"Escuela Normal Regional de la Montaña \"José Vasconcelos\"","Estado":"Guerrero"},"geometry":{"type":"Point","coordinates":[-98.5774796600582,17.548379320149536]}},{"type":"Feature","properties":{"municipio":"Chilpancingo de los Bravo","localidad":"Chilpancingo de los Bravo","Clave_DGES":"gro04","Esc_norm_1":"Escuela Normal Urbana Federal \"Profr Rafael Ramírez\"","Estado":"Guerrero"},"geometry":{"type":"Point","coordinates":[-99.50277248016579,17.536203309934876]}},{"type":"Feature","properties":{"municipio":"Teloloapan","localidad":"Teloloapan","Clave_DGES":"gro09","Esc_norm_1":"Escuela Normal \"Vicente Guerrero\"","Estado":"Guerrero"},"geometry":{"type":"Point","coordinates":[-99.86142710967334,18.368442869642763]}},{"type":"Feature","properties":{"municipio":"Iguala de la Independencia","localidad":"Iguala de la Independencia","Clave_DGES":"gro08","Esc_norm_1":"Centro Regional de Educación Normal \"Adolfo López Mateos\"","Estado":"Guerrero"},"geometry":{"type":"Point","coordinates":[-99.53123434029254,18.344505739748115]}},{"type":"Feature","properties":{"municipio":"Guadalajara","localidad":"Guadalajara","Clave_DGES":"jal11","Esc_norm_1":"Benemérita y Centenaria Escuela Normal de Jalisco","Estado":"Jalisco"},"geometry":{"type":"Point","coordinates":[-103.34749599984048,20.695201250037712]}},{"type":"Feature","properties":{"municipio":"Pachuca de Soto","localidad":"Pachuca de Soto","Clave_DGES":"hgo03","Esc_norm_1":"Centro Regional de Educación Normal \"Benito Juárez\"","Estado":"Hidalgo"},"geometry":{"type":"Point","coordinates":[-98.73079299959721,20.115789129564746]}},{"type":"Feature","properties":{"municipio":"Unión de Tula","localidad":"Unión de Tula","Clave_DGES":"jal09","Esc_norm_1":"Escuela Normal para Educadoras de Unión de Tula","Estado":"Jalisco"},"geometry":{"type":"Point","coordinates":[-104.26320160986637,19.96221299013746]}},{"type":"Feature","properties":{"municipio":"Ixtlahuacán de los Membrillos","localidad":"Atequiza","Clave_DGES":"jal02","Esc_norm_1":"Escuela Normal Rural \"Miguel Hidalgo\" de Atequiza","Estado":"Jalisco"},"geometry":{"type":"Point","coordinates":[-103.13096798988079,20.39699142041775]}},{"type":"Feature","properties":{"municipio":"Guadalajara","localidad":"Guadalajara","Clave_DGES":"jal06","Esc_norm_1":"Escuela Normal Superior de Especialidades","Estado":"Jalisco"},"geometry":{"type":"Point","coordinates":[-103.3950875802276,20.6556592197972]}},{"type":"Feature","properties":{"municipio":"Zapopan","localidad":"Zapopan","Clave_DGES":"jal01","Esc_norm_1":"Escuela Normal para Educadoras de Guadalajara","Estado":"Jalisco"},"geometry":{"type":"Point","coordinates":[-103.42602334040481,20.629250340131136]}},{"type":"Feature","properties":{"municipio":"Arandas","localidad":"Arandas","Clave_DGES":"jal10","Esc_norm_1":"Escuela Normal para Educadoras de Arandas","Estado":"Jalisco"},"geometry":{"type":"Point","coordinates":[-102.34017723988768,20.7024397996571]}},{"type":"Feature","properties":{"municipio":"Colotlán","localidad":"Colotlán","Clave_DGES":"jal04","Esc_norm_1":"Escuela Normal Experimental de Colotlán","Estado":"Jalisco"},"geometry":{"type":"Point","coordinates":[-103.27278781020925,22.10744745043951]}},{"type":"Feature","properties":{"municipio":"Guadalajara","localidad":"Guadalajara","Clave_DGES":"jal07","Esc_norm_1":"Escuela Normal Superior de Jalisco","Estado":"Jalisco"},"geometry":{"type":"Point","coordinates":[-103.3359378796294,20.71139671988277]}},{"type":"Feature","properties":{"municipio":"Toluca","localidad":"Toluca de Lerdo","Clave_DGES":"mex33","Esc_norm_1":"Centenaria y Benemérita Escuela Normal para Profesores","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.64530622010597,19.29226571009451]}},{"type":"Feature","properties":{"municipio":"Toluca","localidad":"Toluca de Lerdo","Clave_DGES":"mex2c","Esc_norm_1":"Escuela Normal Superior del Valle de Toluca","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.64197046016858,19.297812670018743]}},{"type":"Feature","properties":{"municipio":"Toluca","localidad":"Toluca de Lerdo","Clave_DGES":"mex35","Esc_norm_1":"Escuela Normal Superior del Estado de México","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.66789511966402,19.279147150120934]}},{"type":"Feature","properties":{"municipio":"Nezahualcóyotl","localidad":"Ciudad Nezahualcóyotl","Clave_DGES":"mex11","Esc_norm_1":"Escuela Normal No 4 de Nezahualcóyotl","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.01697538970245,19.401136670221206]}},{"type":"Feature","properties":{"municipio":"Tejupilco","localidad":"Tejupilco de Hidalgo","Clave_DGES":"mex23","Esc_norm_1":"Escuela Normal de Tejupilco","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-100.14544616980487,18.896971429687767]}},{"type":"Feature","properties":{"municipio":"Tecámac","localidad":"Tecámac de Felipe Villanueva","Clave_DGES":"mex22","Esc_norm_1":"Escuela Normal de Tecámac","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-98.97904384020103,19.70917225959215]}},{"type":"Feature","properties":{"municipio":"Zumpango","localidad":"Zumpango de Ocampo","Clave_DGES":"mex37","Esc_norm_1":"Escuela Normal de Zumpango","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.09530644963291,19.79604028962774]}},{"type":"Feature","properties":{"municipio":"Tlalnepantla de Baz","localidad":"Tlalnepantla","Clave_DGES":"mex29","Esc_norm_1":"Escuela Normal de Tlalnepantla","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.17646411023048,19.521113340308432]}},{"type":"Feature","properties":{"municipio":"Texcoco","localidad":"Santa María Tulantongo","Clave_DGES":"mex27","Esc_norm_1":"Escuela Normal de Texcoco","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-98.88458714008442,19.530583169977376]}},{"type":"Feature","properties":{"municipio":"Teotihuacán","localidad":"Teotihuacán de Arista","Clave_DGES":"mex26","Esc_norm_1":"Escuela Normal de Teotihuacan","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-98.87817126958839,19.691806439915297]}},{"type":"Feature","properties":{"municipio":"Nezahualcóyotl","localidad":"Ciudad Nezahualcóyotl","Clave_DGES":"mex09","Esc_norm_1":"Escuela Normal No 2 de Nezahualcóyotl","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.0643946797706,19.48711997960345]}},{"type":"Feature","properties":{"municipio":"Nezahualcóyotl","localidad":"Ciudad Nezahualcóyotl","Clave_DGES":"mex08","Esc_norm_1":"Escuela Normal No 1 de Nezahualcóyotl","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.00936974042116,19.40576196983909]}},{"type":"Feature","properties":{"municipio":"Toluca","localidad":"Toluca de Lerdo","Clave_DGES":"mex32","Esc_norm_1":"Escuela Normal No 1 de Toluca","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.64188796985388,19.296951159968103]}},{"type":"Feature","properties":{"municipio":"Tenancingo","localidad":"El Salitre","Clave_DGES":"mex24","Esc_norm_1":"Escuela Normal de Tenancingo","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.5886176896546,18.95189188040598]}},{"type":"Feature","properties":{"municipio":"Toluca","localidad":"San Buenaventura","Clave_DGES":"mex31","Esc_norm_1":"Escuela Normal de Educación Física \"Gral Ignacio M Beteta\"","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.70157254044034,19.276552990028506]}},{"type":"Feature","properties":{"municipio":"Atizapán de Zaragoza","localidad":"Ciudad López Mateos","Clave_DGES":"mex03","Esc_norm_1":"Escuela Normal de Educación Especial del Estado de México","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.26644310026882,19.59402026971975]}},{"type":"Feature","properties":{"municipio":"Cuautitlán Izcalli","localidad":"Cuautitlán Izcalli","Clave_DGES":"mex14","Esc_norm_1":"Escuela Normal de Cuautitlán Izcalli","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.20435277036404,19.648916980134572]}},{"type":"Feature","properties":{"municipio":"Ecatepec de Morelos","localidad":"Ecatepec de Morelos","Clave_DGES":"mex15","Esc_norm_1":"Escuela Normal de Ecatepec","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.04347506042564,19.604647599706993]}},{"type":"Feature","properties":{"municipio":"La Paz","localidad":"Los Reyes Acaquilpan","Clave_DGES":"mex06","Esc_norm_1":"Escuela Normal de Los Reyes Acaquilpan","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-98.96735755041061,19.35765611034128]}},{"type":"Feature","properties":{"municipio":"Jilotepec","localidad":"Jilotepec de Molina Enríquez","Clave_DGES":"mex18","Esc_norm_1":"Escuela Normal de Jilotepec","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.5431968604467,19.95294088001765]}},{"type":"Feature","properties":{"municipio":"Ixtapan de la Sal","localidad":"Ixtapan de la Sal","Clave_DGES":"mex16","Esc_norm_1":"Escuela Normal de Ixtapan de la Sal","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.68516587020872,18.84409560023181]}},{"type":"Feature","properties":{"municipio":"Sultepec","localidad":"Sultepec de Pedro Ascencio de Alquisiras","Clave_DGES":"mex21","Esc_norm_1":"Escuela Normal de Sultepec","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.96974778992853,18.858223099716326]}},{"type":"Feature","properties":{"municipio":"Tianguistenco","localidad":"Santiago Tianguistenco de Galeana","Clave_DGES":"mex28","Esc_norm_1":"Escuela Normal de Santiago Tianguistenco","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.46497042044854,19.175500410215818]}},{"type":"Feature","properties":{"municipio":"San Felipe del Progreso","localidad":"San Felipe del Progreso","Clave_DGES":"mex20","Esc_norm_1":"Escuela Normal de San Felipe del Progreso","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.9481047802114,19.718415159731876]}},{"type":"Feature","properties":{"municipio":"Naucalpan de Juárez","localidad":"Naucalpan de Juárez","Clave_DGES":"mex19","Esc_norm_1":"Escuela Normal de Naucalpan","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.27056830038674,19.50219282034243]}},{"type":"Feature","properties":{"municipio":"Toluca","localidad":"Toluca de Lerdo","Clave_DGES":"mex34","Esc_norm_1":"Escuela Normal No 3 de Toluca","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.64853611994596,19.277314480179143]}},{"type":"Feature","properties":{"municipio":"Nezahualcóyotl","localidad":"Ciudad Nezahualcóyotl","Clave_DGES":"mex10","Esc_norm_1":"Escuela Normal No 3 de Nezahualcóyotl","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.01426762994714,19.39872662023737]}},{"type":"Feature","properties":{"municipio":"Atlacomulco","localidad":"Atlacomulco de Fabela","Clave_DGES":"mex04","Esc_norm_1":"Escuela Normal de Atlacomulco","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.87844838018856,19.799242750252745]}},{"type":"Feature","properties":{"municipio":"Atizapán de Zaragoza","localidad":"Ciudad López Mateos","Clave_DGES":"mex02","Esc_norm_1":"Escuela Normal de Atizapán de Zaragoza","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.25266014005337,19.557572390253654]}},{"type":"Feature","properties":{"municipio":"Amecameca","localidad":"Amecameca de Juárez","Clave_DGES":"mex01","Esc_norm_1":"Escuela Normal de Amecameca","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-98.77356919965882,19.109165520372528]}},{"type":"Feature","properties":{"municipio":"Coatepec Harinas","localidad":"Coatepec Harinas","Clave_DGES":"mex13","Esc_norm_1":"Escuela Normal de Coatepec Harinas","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.77020560010834,18.929849739873646]}},{"type":"Feature","properties":{"municipio":"Coacalco de Berriozábal","localidad":"San Francisco Coacalco","Clave_DGES":"mex12","Esc_norm_1":"Escuela Normal de Coacalco","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.10098901023457,19.622667949566278]}},{"type":"Feature","properties":{"municipio":"Chalco","localidad":"Chalco de Díaz Covarrubias","Clave_DGES":"mex07","Esc_norm_1":"Escuela Normal de Chalco","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-98.89017486987433,19.26553418965119]}},{"type":"Feature","properties":{"municipio":"Capulhuac","localidad":"Capulhuac de Mirafuentes","Clave_DGES":"mex05","Esc_norm_1":"Escuela Normal de Capulhuac","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.47138905995712,19.198518020190534]}},{"type":"Feature","properties":{"municipio":"Arteaga","localidad":"Arteaga","Clave_DGES":"mch02","Esc_norm_1":"Centro Regional de Educación Normal Licenciatura en Preescolar deArteaga","Estado":"Michoacán"},"geometry":{"type":"Point","coordinates":[-102.29322106020373,18.34907986974025]}},{"type":"Feature","properties":{"municipio":"Tlalnepantla de Baz","localidad":"Tlalnepantla","Clave_DGES":"mex1c","Esc_norm_1":"Escuela Normal Superior del Valle de México","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.22311440980212,19.51509272005302]}},{"type":"Feature","properties":{"municipio":"Morelia","localidad":"Morelia","Clave_DGES":"mch06","Esc_norm_1":"Benemérita y Centenaria Escuela Normal Urbana Federal J Jesús RomeroFlores","Estado":"Michoacán"},"geometry":{"type":"Point","coordinates":[-101.18213549006077,19.702406360365273]}},{"type":"Feature","properties":{"municipio":"Morelia","localidad":"Morelia","Clave_DGES":"mch04","Esc_norm_1":"Escuela Normal para Educadoras de Morelia","Estado":"Michoacán"},"geometry":{"type":"Point","coordinates":[-101.23634790992804,19.684975040365885]}},{"type":"Feature","properties":{"municipio":"Cherán","localidad":"Cherán","Clave_DGES":"mch12","Esc_norm_1":"Escuela Normal Indígena de Michoacán","Estado":"Michoacán"},"geometry":{"type":"Point","coordinates":[-101.96603202016155,19.694256099639347]}},{"type":"Feature","properties":{"municipio":"Morelia","localidad":"Morelia","Clave_DGES":"mch05","Esc_norm_1":"Escuela Normal Superior de Michoacán","Estado":"Michoacán"},"geometry":{"type":"Point","coordinates":[-101.22257781001787,19.68238869987863]}},{"type":"Feature","properties":{"municipio":"Tepic","localidad":"Tepic","Clave_DGES":"nay03","Esc_norm_1":"Escuela Normal Superior de Nayarit","Estado":"Nayarit"},"geometry":{"type":"Point","coordinates":[-104.89460802993659,21.494324479591114]}},{"type":"Feature","properties":{"municipio":"Acaponeta","localidad":"Acaponeta","Clave_DGES":"nay01","Esc_norm_1":"Escuela Normal Experimental de Acaponeta","Estado":"Nayarit"},"geometry":{"type":"Point","coordinates":[-105.36349733983036,22.48826921994862]}},{"type":"Feature","properties":{"municipio":"Cuautla","localidad":"Cuautla","Clave_DGES":"mor02","Esc_norm_1":"Escuela Normal Urbana Federal Cuautla","Estado":"Morelos"},"geometry":{"type":"Point","coordinates":[-98.94999157964764,18.80136061969688]}},{"type":"Feature","properties":{"municipio":"Heroica Ciudad de Huajuapan de León","localidad":"Heroica Ciudad de Huajuapan de León","Clave_DGES":"oax01","Esc_norm_1":"Escuela Normal Experimental Huajuapan","Estado":"Oaxaca"},"geometry":{"type":"Point","coordinates":[-97.77010645025246,17.811581319622235]}},{"type":"Feature","properties":{"municipio":"Putla Villa de Guerrero","localidad":"Putla Villa de Guerrero","Clave_DGES":"oax07","Esc_norm_1":"Escuela Normal Experimental \"Presidente Lázaro Cárdenas\"","Estado":"Oaxaca"},"geometry":{"type":"Point","coordinates":[-97.93370837034496,17.02657428957184]}},{"type":"Feature","properties":{"municipio":"San Juan Cacahuatepec","localidad":"San Juan Cacahuatepec","Clave_DGES":"oax09","Esc_norm_1":"Escuela Normal Experimental \"Presidente Venustiano Carranza\"","Estado":"Oaxaca"},"geometry":{"type":"Point","coordinates":[-98.15209769994885,16.6191606796217]}},{"type":"Feature","properties":{"municipio":"Villa de Tamazulápam del Progreso","localidad":"Villa de Tamazulápam del Progreso","Clave_DGES":"oax10","Esc_norm_1":"Escuela Normal Rural Vanguardia","Estado":"Oaxaca"},"geometry":{"type":"Point","coordinates":[-97.56661063027633,17.67133733994632]}},{"type":"Feature","properties":{"municipio":"Oaxaca de Juárez","localidad":"Oaxaca de Juárez","Clave_DGES":"oax05","Esc_norm_1":"Escuela Normal de Educación Especial","Estado":"Oaxaca"},"geometry":{"type":"Point","coordinates":[-96.69799417009483,17.08662953012879]}},{"type":"Feature","properties":{"municipio":"San Pedro y San Pablo Teposcolula","localidad":"San Pedro y San Pablo Teposcolula","Clave_DGES":"oax11","Esc_norm_1":"Escuela Normal Experimental de Teposcolula","Estado":"Oaxaca"},"geometry":{"type":"Point","coordinates":[-97.49065632023297,17.509903470368897]}},{"type":"Feature","properties":{"municipio":"Ciudad Ixtepec","localidad":"Ciudad Ixtepec","Clave_DGES":"oax02","Esc_norm_1":"Escuela Normal Urbana Federal del Istmo","Estado":"Oaxaca"},"geometry":{"type":"Point","coordinates":[-95.0855163595923,16.546747860225594]}},{"type":"Feature","properties":{"municipio":"Oaxaca de Juárez","localidad":"Oaxaca de Juárez","Clave_DGES":"oax04","Esc_norm_1":"Escuela Normal de Educación Preescolar de Oaxaca","Estado":"Oaxaca"},"geometry":{"type":"Point","coordinates":[-96.7296363099677,17.043093619674835]}},{"type":"Feature","properties":{"municipio":"Oaxaca de Juárez","localidad":"Oaxaca de Juárez","Clave_DGES":"oax03","Esc_norm_1":"Centro Regional de Educación Normal de Oaxaca","Estado":"Oaxaca"},"geometry":{"type":"Point","coordinates":[-96.71765806966414,17.08726651993402]}},{"type":"Feature","properties":{"municipio":"Villa de Tututepec","localidad":"Río Grande o Piedra Parada","Clave_DGES":"oax08","Esc_norm_1":"Centro Regional de Educación Normal de Río Grande","Estado":"Oaxaca"},"geometry":{"type":"Point","coordinates":[-97.42549975990596,15.999799990377312]}},{"type":"Feature","properties":{"municipio":"Sabinas Hidalgo","localidad":"Ciudad Sabinas Hidalgo","Clave_DGES":"nul05","Esc_norm_1":"Escuela Normal Pablo Livas","Estado":"Nuevo León"},"geometry":{"type":"Point","coordinates":[-100.17547176031343,26.500173500106996]}},{"type":"Feature","properties":{"municipio":"Monterrey","localidad":"Monterrey","Clave_DGES":"nul03","Esc_norm_1":"Escuela Normal de Especialización","Estado":"Nuevo León"},"geometry":{"type":"Point","coordinates":[-100.32657253019806,25.669614179750624]}},{"type":"Feature","properties":{"municipio":"Monterrey","localidad":"Monterrey","Clave_DGES":"nul04","Esc_norm_1":"Escuela Normal Superior \"Profr Moisés Sáenz Garza\"","Estado":"Nuevo León"},"geometry":{"type":"Point","coordinates":[-100.33141398996361,25.68029398967593]}},{"type":"Feature","properties":{"municipio":"Montemorelos","localidad":"Montemorelos","Clave_DGES":"nul01","Esc_norm_1":"Escuela Normal \"Profr Serafín Peña\"","Estado":"Nuevo León"},"geometry":{"type":"Point","coordinates":[-99.83614886038157,25.184059610362795]}},{"type":"Feature","properties":{"municipio":"Zacatlán","localidad":"Zacatlán","Clave_DGES":"pue14","Esc_norm_1":"Escuela Normal Ofi cial \"Lic Benito Juárez\"","Estado":"Puebla"},"geometry":{"type":"Point","coordinates":[-97.96358215978881,19.922886969857814]}},{"type":"Feature","properties":{"municipio":"Puebla","localidad":"Heroica Puebla de Zaragoza","Clave_DGES":"pue12","Esc_norm_1":"Escuela Normal Superior Federalizada del Estado de Puebla","Estado":"Puebla"},"geometry":{"type":"Point","coordinates":[-98.26506356023509,19.049198669682937]}},{"type":"Feature","properties":{"municipio":"Puebla","localidad":"Heroica Puebla de Zaragoza","Clave_DGES":"pue04","Esc_norm_1":"Escuela Normal Superior del Estado","Estado":"Puebla"},"geometry":{"type":"Point","coordinates":[-98.20852662040716,19.04404881979724]}},{"type":"Feature","properties":{"municipio":"Acatlán","localidad":"Acatlán de Osorio","Clave_DGES":"pue01","Esc_norm_1":"Escuela Normal Experimental \"Profr Darío Rodríguez Cruz\"","Estado":"Puebla"},"geometry":{"type":"Point","coordinates":[-98.04260328031711,18.22057447992836]}},{"type":"Feature","properties":{"municipio":"Ixcaquixtla","localidad":"San Juan Ixcaquixtla","Clave_DGES":"pue18","Esc_norm_1":"Escuela Normal Primaria Ofi cial \"Profr Jesús Merino Nieto\"","Estado":"Puebla"},"geometry":{"type":"Point","coordinates":[-97.8390524398182,18.468008149756372]}},{"type":"Feature","properties":{"municipio":"Chiautla","localidad":"Ciudad de Chiautla de Tapia","Clave_DGES":"pue15","Esc_norm_1":"Normal Ofi cial \"Profr Luis Casarrubias Ibarra\"","Estado":"Puebla"},"geometry":{"type":"Point","coordinates":[-98.6032163999169,18.303167099681957]}},{"type":"Feature","properties":{"municipio":"Tehuacán","localidad":"Tehuacán","Clave_DGES":"pue4r","Esc_norm_1":"Escuela Normal Superior de Tehuacán","Estado":"Puebla"},"geometry":{"type":"Point","coordinates":[-97.40858982995667,18.41936217992071]}},{"type":"Feature","properties":{"municipio":"Teteles de Avila Castillo","localidad":"Teteles de Ávila Castillo","Clave_DGES":"pue13","Esc_norm_1":"Escuela Normal Rural \"Carmen Serdán\"","Estado":"Puebla"},"geometry":{"type":"Point","coordinates":[-97.45874992986535,19.856982349855627]}},{"type":"Feature","properties":{"municipio":"Huauchinango","localidad":"Huauchinango","Clave_DGES":"pue02","Esc_norm_1":"Escuela Normal \"Profr Fidel Meza y Sánchez\"","Estado":"Puebla"},"geometry":{"type":"Point","coordinates":[-98.05159899999381,20.180281129570517]}},{"type":"Feature","properties":{"municipio":"San Luis Potosí","localidad":"San Luis Potosí","Clave_DGES":"slp03","Esc_norm_1":"Benemérita y Centenaria Escuela Normal del Estado de San Luis Potosí","Estado":"San Luis Potosí"},"geometry":{"type":"Point","coordinates":[-100.98429043965206,22.154510209678506]}},{"type":"Feature","properties":{"municipio":"Culiacán","localidad":"Culiacán Rosales","Clave_DGES":"sin02","Esc_norm_1":"Escuela Normal de Sinaloa","Estado":"Sinaloa"},"geometry":{"type":"Point","coordinates":[-107.41049805983755,24.779679339929658]}},{"type":"Feature","properties":{"municipio":"Felipe Carrillo Puerto","localidad":"Felipe Carrillo Puerto","Clave_DGES":"qoo05","Esc_norm_1":"Centro Regional de Educación Normal","Estado":"Quintana Roo"},"geometry":{"type":"Point","coordinates":[-88.049309300184,19.591538749713607]}},{"type":"Feature","properties":{"municipio":"Bacalar","localidad":"Bacalar","Clave_DGES":"qoo04","Esc_norm_1":"Centro Regional de Educación Normal \"Javier Rojo Gómez\"","Estado":"Quintana Roo"},"geometry":{"type":"Point","coordinates":[-88.39483006955203,18.667695119634118]}},{"type":"Feature","properties":{"municipio":"Jalpan de Serra","localidad":"Jalpan de Serra","Clave_DGES":"qro03","Esc_norm_1":"Centenaria y Benemérita Escuela Normal del Estado de Querétaro \"AndrésBalvanera\" (Unidad Jalpan)","Estado":"Queretaro"},"geometry":{"type":"Point","coordinates":[-99.46182435990625,21.21819284972031]}},{"type":"Feature","properties":{"municipio":"Rayón","localidad":"Rayón","Clave_DGES":"slp04","Esc_norm_1":"Escuela Normal de La Huasteca Potosina","Estado":"San Luis Potosí"},"geometry":{"type":"Point","coordinates":[-99.6457956500492,21.84418690959825]}},{"type":"Feature","properties":{"municipio":"Matehuala","localidad":"Matehuala","Clave_DGES":"slp02","Esc_norm_1":"Escuela Normal Experimental Normalismo Mexicano","Estado":"San Luis Potosí"},"geometry":{"type":"Point","coordinates":[-100.63883137996419,23.67316787999374]}},{"type":"Feature","properties":{"municipio":"San Luis Potosí","localidad":"San Luis Potosí","Clave_DGES":"slp05","Esc_norm_1":"Escuela Normal de Estudios Superiores del Magisterio Potosino Plantel 1,San Luis Potosí","Estado":"San Luis Potosí"},"geometry":{"type":"Point","coordinates":[-101.00953376017486,22.186365569815223]}},{"type":"Feature","properties":{"municipio":"Rioverde","localidad":"Rioverde","Clave_DGES":"slp08","Esc_norm_1":"Escuela Normal de Estudios Superiores del Magisterio Potosino Plantel 4,Río Verde","Estado":"San Luis Potosí"},"geometry":{"type":"Point","coordinates":[-99.99195718007974,21.923996800312125]}},{"type":"Feature","properties":{"municipio":"Matehuala","localidad":"Matehuala","Clave_DGES":"slp07","Esc_norm_1":"Escuela Normal de Estudios Superiores del Magisterio Potosino Plantel 3,Matehuala","Estado":"San Luis Potosí"},"geometry":{"type":"Point","coordinates":[-100.63883137996419,23.67316787999374]}},{"type":"Feature","properties":{"municipio":"Ciudad Valles","localidad":"Ciudad Valles","Clave_DGES":"slp06","Esc_norm_1":"Escuela Normal de Estudios Superiores del Magisterio Potosino Plantel 2,Ciudad Valles","Estado":"San Luis Potosí"},"geometry":{"type":"Point","coordinates":[-99.01024459011569,22.00506056988945]}},{"type":"Feature","properties":{"municipio":"Querétaro","localidad":"Santiago de Querétaro","Clave_DGES":"qro04","Esc_norm_1":"Escuela Normal Superior de Querétaro","Estado":"Queretaro"},"geometry":{"type":"Point","coordinates":[-100.38948242037736,20.58671704965218]}},{"type":"Feature","properties":{"municipio":"San Juan del Río","localidad":"San Juan del Río","Clave_DGES":"qro02","Esc_norm_1":"Centenaria y Benemérita Escuela Normal del Estado de Querétaro \"AndrésBalvanera\" (Unidad San Juan del Río )","Estado":"Queretaro"},"geometry":{"type":"Point","coordinates":[-99.99207425022644,20.38987479008955]}},{"type":"Feature","properties":{"municipio":"Querétaro","localidad":"Santiago de Querétaro","Clave_DGES":"qro01","Esc_norm_1":"Centenaria y Benemérita Escuela Normal del Estado de Querétaro \"AndrésBalvanera\"","Estado":"Queretaro"},"geometry":{"type":"Point","coordinates":[-100.38461284960329,20.56991572992706]}},{"type":"Feature","properties":{"municipio":"Cedral","localidad":"Cedral","Clave_DGES":"slp01","Esc_norm_1":"Centro Regional de Educación Normal \"Profra Amina Madera Lauterio\"","Estado":"San Luis Potosí"},"geometry":{"type":"Point","coordinates":[-100.73437321015547,23.812022849574873]}},{"type":"Feature","properties":{"municipio":"Nuevo Laredo","localidad":"Nuevo Laredo","Clave_DGES":"tam06","Esc_norm_1":"Escuela Normal Urbana Cuauhtémoc","Estado":"Tamaulipas"},"geometry":{"type":"Point","coordinates":[-99.5151202896696,27.438178490045345]}},{"type":"Feature","properties":{"municipio":"Jaumave","localidad":"Jaumave","Clave_DGES":"tam03","Esc_norm_1":"Escuela Normal \"Profr y Gral Alberto Carrera Torres\"","Estado":"Tamaulipas"},"geometry":{"type":"Point","coordinates":[-99.38587246993848,23.397949900167816]}},{"type":"Feature","properties":{"municipio":"Matamoros","localidad":"Heroica Matamoros","Clave_DGES":"tam04","Esc_norm_1":"Escuela Normal \"Lic J Guadalupe Mainero\"","Estado":"Tamaulipas"},"geometry":{"type":"Point","coordinates":[-97.51187176976634,25.85628342973655]}},{"type":"Feature","properties":{"municipio":"Balancán","localidad":"Balancán","Clave_DGES":"tab01","Esc_norm_1":"Escuela Normal Urbana de Balancán","Estado":"Tabasco"},"geometry":{"type":"Point","coordinates":[-91.54109448991875,17.80400069037961]}},{"type":"Feature","properties":{"municipio":"Centro","localidad":"Villahermosa","Clave_DGES":"tab03","Esc_norm_1":"Escuela Normal \"Pablo García Ávalos\"","Estado":"Tabasco"},"geometry":{"type":"Point","coordinates":[-92.94385828003556,17.97427757025372]}},{"type":"Feature","properties":{"municipio":"Centro","localidad":"Villahermosa","Clave_DGES":"tab04","Esc_norm_1":"Escuela Normal del Estado \"Rosario María Gutiérrez Eskildsen\"","Estado":"Tabasco"},"geometry":{"type":"Point","coordinates":[-92.93709594032532,17.986502669962306]}},{"type":"Feature","properties":{"municipio":"Centro","localidad":"Villahermosa","Clave_DGES":"tab08","Esc_norm_1":"Escuela Normal de Educación Primaria \"Rosario María Gutiérrez Eskildsen\"","Estado":"Tabasco"},"geometry":{"type":"Point","coordinates":[-92.93709641966399,17.98649285026488]}},{"type":"Feature","properties":{"municipio":"Centro","localidad":"Villahermosa","Clave_DGES":"tab02","Esc_norm_1":"Escuela Normal \"Graciela Pintado de Madrazo\"","Estado":"Tabasco"},"geometry":{"type":"Point","coordinates":[-92.92237963041555,18.012800780131954]}},{"type":"Feature","properties":{"municipio":"Victoria","localidad":"Ciudad Victoria","Clave_DGES":"tam01","Esc_norm_1":"Benemérita Escuela Normal Federalizada de Tamaulipas","Estado":"Tamaulipas"},"geometry":{"type":"Point","coordinates":[-99.12766368992732,23.72922325984564]}},{"type":"Feature","properties":{"municipio":"Navojoa","localidad":"Navojoa","Clave_DGES":"son06","Esc_norm_1":"Centro Regional de Educación Normal \"Rafael Ramírez Castañeda\"(Navojoa)","Estado":"Sonora"},"geometry":{"type":"Point","coordinates":[-109.44030554996112,27.050765979566336]}},{"type":"Feature","properties":{"municipio":"Cajeme","localidad":"Providencia","Clave_DGES":"son01","Esc_norm_1":"Escuela Normal Estatal de Especialización","Estado":"Sonora"},"geometry":{"type":"Point","coordinates":[-109.98363989976156,27.508163760449236]}},{"type":"Feature","properties":{"municipio":"Hermosillo","localidad":"Hermosillo","Clave_DGES":"son05","Esc_norm_1":"Escuela Normal de Educación Física \"Profr Emilio Miramontes Nájera\"","Estado":"Sonora"},"geometry":{"type":"Point","coordinates":[-110.99346877996021,29.109795659841893]}},{"type":"Feature","properties":{"municipio":"Hermosillo","localidad":"Hermosillo","Clave_DGES":"son04","Esc_norm_1":"Escuela Normal Superior de Hermosillo","Estado":"Sonora"},"geometry":{"type":"Point","coordinates":[-110.98749393969354,29.106000619732868]}},{"type":"Feature","properties":{"municipio":"Hermosillo","localidad":"Hermosillo","Clave_DGES":"son03","Esc_norm_1":"Escuela Normal del Estado \"Profr Jesús Manuel Bustamante Mungarro\"","Estado":"Sonora"},"geometry":{"type":"Point","coordinates":[-110.94252340013475,29.0783384700444]}},{"type":"Feature","properties":{"municipio":"Navojoa","localidad":"Navojoa","Clave_DGES":"son08","Esc_norm_1":"Escuela Normal Superior de Hermosillo (Subsede Navojoa)","Estado":"Sonora"},"geometry":{"type":"Point","coordinates":[-109.43863364013038,27.05325458982753]}},{"type":"Feature","properties":{"municipio":"Panotla","localidad":"Panotla","Clave_DGES":"tla02","Esc_norm_1":"Escuela Normal Rural \"Lic Benito Juárez\"","Estado":"Tlaxcala"},"geometry":{"type":"Point","coordinates":[-98.2788794895967,19.30931339999347]}},{"type":"Feature","properties":{"municipio":"Tlaxcala","localidad":"Tlaxcala de Xicohténcatl","Clave_DGES":"tla04","Esc_norm_1":"Escuela Normal Urbana Federal \"Lic Emilio Sánchez Piedras\"","Estado":"Tlaxcala"},"geometry":{"type":"Point","coordinates":[-98.24174250011623,19.32023295029046]}},{"type":"Feature","properties":{"municipio":"Santa Apolonia Teacalco","localidad":"Santa Apolonia Teacalco","Clave_DGES":"tla05","Esc_norm_1":"Escuela Normal Estatal \"Profra Leonarda Gómez Blanco\"","Estado":"Tlaxcala"},"geometry":{"type":"Point","coordinates":[-98.30936956015705,19.24144973012102]}},{"type":"Feature","properties":{"municipio":"Panotla","localidad":"Panotla","Clave_DGES":"tla01","Esc_norm_1":"Escuela Normal Preescolar \"Profra Francisca Madera Martínez\"","Estado":"Tlaxcala"},"geometry":{"type":"Point","coordinates":[-98.27366922955127,19.31918308982779]}},{"type":"Feature","properties":{"municipio":"Xalapa","localidad":"Xalapa-Enríquez","Clave_DGES":"ver06","Esc_norm_1":"Escuela Normal Superior Veracruzana \"Dr Manuel Suárez Trujillo\"","Estado":"Veracruz"},"geometry":{"type":"Point","coordinates":[-96.87211450957693,19.50839903998377]}},{"type":"Feature","properties":{"municipio":"Tlacotalpan","localidad":"Tlacotalpan","Clave_DGES":"ver02","Esc_norm_1":"Escuela Normal \"Juan Enríquez\"","Estado":"Veracruz"},"geometry":{"type":"Point","coordinates":[-95.64873134017915,18.614481770117663]}},{"type":"Feature","properties":{"municipio":"Tuxpan","localidad":"Túxpam de Rodríguez Cano","Clave_DGES":"ver03","Esc_norm_1":"Centro Regional de Educación Normal \"Dr Gonzalo Aguirre Beltrán\"","Estado":"Veracruz"},"geometry":{"type":"Point","coordinates":[-97.35913563040498,20.946458050298816]}},{"type":"Feature","properties":{"municipio":"Xalapa","localidad":"Xalapa-Enríquez","Clave_DGES":"ver05","Esc_norm_1":"Benemérita Escuela Normal Veracruzana \"Enrique C Rébsamen\"","Estado":"Veracruz"},"geometry":{"type":"Point","coordinates":[-96.92921131964664,19.554142709618418]}},{"type":"Feature","properties":{"municipio":"Victoria","localidad":"Ciudad Victoria","Clave_DGES":"tam02","Esc_norm_1":"Escuela Normal Federal de Educadoras \"Mtra Estefanía Castañeda\"","Estado":"Tamaulipas"},"geometry":{"type":"Point","coordinates":[-99.1334248701616,23.725547059749033]}},{"type":"Feature","properties":{"municipio":"Dzidzantún","localidad":"Dzidzantún","Clave_DGES":"yuc01","Esc_norm_1":"Escuela Normal de Dzidzantún","Estado":"Yucatan"},"geometry":{"type":"Point","coordinates":[-89.0316084100001,21.250416299672565]}},{"type":"Feature","properties":{"municipio":"Ticul","localidad":"Ticul","Clave_DGES":"yuc08","Esc_norm_1":"Escuela Normal de Ticul","Estado":"Yucatan"},"geometry":{"type":"Point","coordinates":[-89.52777755968657,20.40489128020846]}},{"type":"Feature","properties":{"municipio":"Mérida","localidad":"Mérida","Clave_DGES":"yuc03","Esc_norm_1":"Escuela Normal Superior de Yucatán \"Profr Antonio Betancourt Pérez\"","Estado":"Yucatan"},"geometry":{"type":"Point","coordinates":[-89.65972661009494,20.973734589579692]}},{"type":"Feature","properties":{"municipio":"Mérida","localidad":"Mérida","Clave_DGES":"yuc02","Esc_norm_1":"Escuela Normal de Educación Preescolar","Estado":"Yucatan"},"geometry":{"type":"Point","coordinates":[-89.59300855959731,20.991855839775212]}},{"type":"Feature","properties":{"municipio":"Valladolid","localidad":"Valladolid","Clave_DGES":"yuc09","Esc_norm_1":"Escuela Normal \"Juan de Dios Rodríguez Heredia\"","Estado":"Yucatan"},"geometry":{"type":"Point","coordinates":[-88.18542830007596,20.67963924015885]}},{"type":"Feature","properties":{"municipio":"Zacatecas","localidad":"Zacatecas","Clave_DGES":"zac04","Esc_norm_1":"Escuela Normal \"Manuel Ávila Camacho\"","Estado":"Zacatecas"},"geometry":{"type":"Point","coordinates":[-102.57826178974977,22.77225607985423]}},{"type":"Feature","properties":{"municipio":"General Francisco R. Murguía","localidad":"Nieves","Clave_DGES":"zac02","Esc_norm_1":"Escuela Normal Experimental \"Rafael Ramírez Castañeda\"","Estado":"Zacatecas"},"geometry":{"type":"Point","coordinates":[-103.0044621599007,23.990944469811495]}},{"type":"Feature","properties":{"municipio":"Loreto","localidad":"San Marcos","Clave_DGES":"zac03","Esc_norm_1":"Escuela Normal Rural \"General Matías Ramos Santos\"","Estado":"Zacatecas"},"geometry":{"type":"Point","coordinates":[-101.95499523963855,22.27711757031966]}},{"type":"Feature","properties":{"municipio":"Nacajuca","localidad":"Nacajuca","Clave_DGES":"tab1c","Esc_norm_1":"Instituto de Educación Superior del Magisterio (IESMA)","Estado":"Tabasco"},"geometry":{"type":"Point","coordinates":[-93.02171859973356,18.17268715029178]}},{"type":"Feature","properties":{"municipio":"Mexicali","localidad":"Mexicali","Clave_DGES":"bca99","Esc_norm_1":"Instituto de Bellas Artes del Estado de Baja California","Estado":"Baja California"},"geometry":{"type":"Point","coordinates":[-115.48235832967316,32.66275625959378]}},{"type":"Feature","properties":{"municipio":"La Paz","localidad":"La Paz","Clave_DGES":"bcs02","Esc_norm_1":"Escuela Normal Superior del Estado de Baja California Sur","Estado":"Baja California Sur"},"geometry":{"type":"Point","coordinates":[-110.31595859990944,24.111323789761116]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"bca08","Esc_norm_1":"Escuela Normal \"Profr Gregorio Torres Quintero\"","Estado":"Baja California"},"geometry":{"type":"Point","coordinates":[-115.92302865844579,30.51012817237728]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"ags06","Esc_norm_1":"Escuela Normal de Rincón de Romos \"Dr Rafael Francisco Aguilar Lomelí\"","Estado":"Aguascalientes"},"geometry":{"type":"Point","coordinates":[-102.32562637915402,22.234437979928884]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"cam09","Esc_norm_1":"Benemérita Escuela Normal \"Profra Pilar Elena Flores Acuña\" del InstitutoCampechano***","Estado":"Campeche"},"geometry":{"type":"Point","coordinates":[-90.54024023399955,19.843733764101955]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"cam10","Esc_norm_1":"Escuela Normal de Educación Preescolar Lic Miriam Cuevas Trujillo","Estado":"Campeche"},"geometry":{"type":"Point","coordinates":[-90.54025047188173,19.843688753033575]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"cam02","Esc_norm_1":"Escuela Normal de Licenciatura en Educación Preescolar \"Profr PastorRodríguez Estrada\" (Módulo Hecelchakán)***","Estado":"Campeche"},"geometry":{"type":"Point","coordinates":[-90.12953480768522,20.186351948183926]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"cam08","Esc_norm_1":"Escuela Normal Superior \"Profr Salomón Barrancos Aguilar\" del InstitutoCampechano***","Estado":"Campeche"},"geometry":{"type":"Point","coordinates":[-90.54010581772928,19.84378609115521]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"chp11","Esc_norm_1":"Escuela Normal de Licenciatura en Educación Preescolar \"Bertha Von Glumery Leyva\"","Estado":"Chiapas"},"geometry":{"type":"Point","coordinates":[-93.09811640504802,16.76061532303879]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"chi08","Esc_norm_1":"Escuela Normal Superior \"Profr José E Medrano R\" (Unidad Nuevo CasasGrandes)","Estado":"Chihuahua"},"geometry":{"type":"Point","coordinates":[-107.92149278166653,30.414355113897443]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"chi07","Esc_norm_1":"Escuela Normal Particular \"Yermo y Parres\"","Estado":"Chihuahua"},"geometry":{"type":"Point","coordinates":[-107.63429058644135,27.754035763839454]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"chi03","Esc_norm_1":"Escuela Normal Rural \"Ricardo Flores Magón\"","Estado":"Chihuahua"},"geometry":{"type":"Point","coordinates":[-105.30155562199434,28.05032659309785]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"coh10","Esc_norm_1":"Escuela Normal de Monclova","Estado":"Coahuila"},"geometry":{"type":"Point","coordinates":[-101.4325689807738,26.88876735193179]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"col02","Esc_norm_1":"Instituto Superior de Educación Normal del Estado de Colima \"Profr GregorioTorres Quintero\"(Subsede Cuauhtémoc)","Estado":"Colima"},"geometry":{"type":"Point","coordinates":[-103.60306614198885,19.329221999695562]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"col03","Esc_norm_1":"Instituto Superior de Educación Normal del Estado de Colima \"Profr GregorioTorres Quintero\"(Subsede Manzanillo)","Estado":"Colima"},"geometry":{"type":"Point","coordinates":[-104.31688910175063,19.05045444161925]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"col04","Esc_norm_1":"Instituto Superior de Educación Normal del Estado de Colima \"Profr GregorioTorres Quintero\"(Subsede Tecomán)","Estado":"Colima"},"geometry":{"type":"Point","coordinates":[-103.88462498255689,18.92284290057944]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"dgo1c","Esc_norm_1":"Centro de Actualización del Magisterio de Durango","Estado":"Durango"},"geometry":{"type":"Point","coordinates":[-104.66439051101321,24.05049695157311]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"dgo01","Esc_norm_1":"Escuela Normal Rural \"J Guadalupe Aguilera\"","Estado":"Durango"},"geometry":{"type":"Point","coordinates":[-104.69973774709933,24.441480645615343]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"dgo02","Esc_norm_1":"Instituto de Estudios Superiores de Educación Normal \"Gral LázaroCárdenas del Río\"","Estado":"Durango"},"geometry":{"type":"Point","coordinates":[-103.51438016930933,25.55387871603]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"gto08","Esc_norm_1":"Centro de Estudios Superiores de Educación Especializada","Estado":"Guanajuato"},"geometry":{"type":"Point","coordinates":[-101.6314425876053,21.10481211688574]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"cdmx02","Esc_norm_1":"Benemérita Escuela Nacional de Maestros","Estado":"Ciudad de México"},"geometry":{"type":"Point","coordinates":[-99.167519363228,19.445149401223944]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"gro1c","Esc_norm_1":"Centro de Actualización del Magisterio de Acapulco","Estado":"Guerrero"},"geometry":{"type":"Point","coordinates":[-99.89887842929602,16.879003902807938]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"gro2c","Esc_norm_1":"Centro de Actualización del Magisterio de Chilpancingo","Estado":"Guerrero"},"geometry":{"type":"Point","coordinates":[-99.49478325474337,17.52511797501461]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"gro3c","Esc_norm_1":"Centro de Actualización del Magisterio de Iguala","Estado":"Guerrero"},"geometry":{"type":"Point","coordinates":[-99.52013286434016,18.336041557172166]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"gro06","Esc_norm_1":"Escuela Normal Regional de Tierra Caliente","Estado":"Guerrero"},"geometry":{"type":"Point","coordinates":[-100.29955962987299,18.298472430858055]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"gro01","Esc_norm_1":"Escuela Normal Rural \"Profr Raúl Isidro Burgos\"","Estado":"Guerrero"},"geometry":{"type":"Point","coordinates":[-99.41069760930719,17.55324005598385]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"gro02","Esc_norm_1":"Escuela Normal Superior de Educación Física","Estado":"Guerrero"},"geometry":{"type":"Point","coordinates":[-99.90001978138775,16.86429288181108]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"hgo04","Esc_norm_1":"Escuela Normal \"Valle del Mezquital\"","Estado":"Hidalgo"},"geometry":{"type":"Point","coordinates":[-99.17736241424399,20.28027528377737]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"jal03","Esc_norm_1":"Centro Regional de Educación Normal de Cd Guzmán","Estado":"Jalisco"},"geometry":{"type":"Point","coordinates":[-103.47375596056906,19.702112228996214]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"jal08","Esc_norm_1":"Escuela Normal Experimental de \"San Antonio Matute\"","Estado":"Jalisco"},"geometry":{"type":"Point","coordinates":[-103.95288964304257,20.563196885927596]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"jal05","Esc_norm_1":"Escuela Superior de Educación Física de Jalisco","Estado":"Jalisco"},"geometry":{"type":"Point","coordinates":[-103.39050498311843,20.697734939715758]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"mex17","Esc_norm_1":"Escuela Normal de Ixtlahuaca","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.77212448895398,19.580451183575292]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"mex30","Esc_norm_1":"Escuela Normal de Santa Ana Zicatecoyan","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-100.22353131731643,18.570776521819084]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"mex36","Esc_norm_1":"Escuela Normal de Valle de Bravo","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-100.13029559526547,19.224661839072667]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"mex25","Esc_norm_1":"Escuela Normal Rural \"Gral Lázaro Cárdenas del Río\"","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.5475400868055,18.954143397000223]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"mex4c","Esc_norm_1":"Unidad de Desarrollo Profesional de Tlalnepantla","Estado":"Estado de México"},"geometry":{"type":"Point","coordinates":[-99.20192440838468,19.532801932363327]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"mch1c","Esc_norm_1":"Centro de Actualización del Magisterio (Morelia)","Estado":"Michoacán"},"geometry":{"type":"Point","coordinates":[-101.23445158956918,19.716555223244995]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"mch01","Esc_norm_1":"Centro Regional de Educación Normal Primaria de Arteaga","Estado":"Michoacán"},"geometry":{"type":"Point","coordinates":[-102.29353256017947,18.34881889277773]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"mch03","Esc_norm_1":"Escuela Normal de Educación Física","Estado":"Michoacán"},"geometry":{"type":"Point","coordinates":[-101.22227721971785,19.64778551788737]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"mch07","Esc_norm_1":"Escuela Normal Rural \"Vasco de Quiroga\"","Estado":"Michoacán"},"geometry":{"type":"Point","coordinates":[-101.35321236096166,19.547038514216126]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"mch17","Esc_norm_1":"Instituto Michoacano de Ciencias de la Educación \"José María Morelos\"Plantel Morelia","Estado":"Michoacán"},"geometry":{"type":"Point","coordinates":[-101.19625119044002,19.685542405557612]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"mor01","Esc_norm_1":"Escuela Normal Rural \"Gral Emiliano Zapata\"","Estado":"Morelos"},"geometry":{"type":"Point","coordinates":[-98.76167452256112,18.729785258882657]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"nay02","Esc_norm_1":"Instituto Estatal de Educación Normal de Nayarit \"Profr y Lic FranciscoBenítez Silva\"","Estado":"Nayarit"},"geometry":{"type":"Point","coordinates":[-104.89194887763858,21.497465557889257]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"nul02","Esc_norm_1":"Escuela Normal \"Ing Miguel F Martínez\" Centenaria y Benemérita","Estado":"Nuevo León"},"geometry":{"type":"Point","coordinates":[-100.29414008859419,25.671085868118382]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"oax12","Esc_norm_1":"Escuela Normal Bilingüe e Intercultural de Oaxaca","Estado":"Oaxaca"},"geometry":{"type":"Point","coordinates":[-96.57559883092125,16.988615060736493]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"pue03","Esc_norm_1":"Benemérito Instituto Normal del Estado \"Gral Juan Crisóstomo Bonilla\"","Estado":"Puebla"},"geometry":{"type":"Point","coordinates":[-98.2234779123757,19.06512264139684]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"pue1c","Esc_norm_1":"Instituto Jaime Torres Bodet","Estado":"Puebla"},"geometry":{"type":"Point","coordinates":[-98.26746590662623,19.10782172998887]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"qoo1c","Esc_norm_1":"Centro de Actualización del Magisterio","Estado":"Quintana Roo"},"geometry":{"type":"Point","coordinates":[-88.2969496899762,18.526080580354574]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"slp09","Esc_norm_1":"Escuela Normal de Estudios Superiores del Magisterio Potosino Plantel 5,Tamazunchale","Estado":"San Luis Potosí"},"geometry":{"type":"Point","coordinates":[-98.72817522780446,21.282531753637556]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"sin01","Esc_norm_1":"Escuela Normal de Especialización del Estado de Sinaloa","Estado":"Sinaloa"},"geometry":{"type":"Point","coordinates":[-107.42016655424305,24.82830948619386]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"sin03","Esc_norm_1":"Escuela Normal Experimental de El Fuerte \"Profr Miguel Castillo Cruz\"","Estado":"Sinaloa"},"geometry":{"type":"Point","coordinates":[-108.69197813398364,26.417371843735623]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"sin05","Esc_norm_1":"Escuela Normal Experimental de El Fuerte \"Profr Miguel Castillo Cruz\"(Extensión Mazatlán)","Estado":"Sinaloa"},"geometry":{"type":"Point","coordinates":[-106.42441734668319,23.201789055120855]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"sin04","Esc_norm_1":"Escuela Normal del Pacífico","Estado":"Sinaloa"},"geometry":{"type":"Point","coordinates":[-106.39995593541806,23.22744991917847]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"son02","Esc_norm_1":"Escuela Normal Rural \"Gral Plutarco Elías Calles\"","Estado":"Sonora"},"geometry":{"type":"Point","coordinates":[-109.56957767656849,27.02654211072985]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"son11","Esc_norm_1":"Escuela Normal Superior de Hermosillo (Subsede Cd Obregón)","Estado":"Sonora"},"geometry":{"type":"Point","coordinates":[-109.93930079489576,27.488899837957206]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"tam1c","Esc_norm_1":"Centro de Actualización del Magisterio (Victoria)","Estado":"Tamaulipas"},"geometry":{"type":"Point","coordinates":[-99.1464613004486,23.718248743884487]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"tam07","Esc_norm_1":"Escuela Normal Rural de Tam Maestro Lauro Aguirre","Estado":"Tamaulipas"},"geometry":{"type":"Point","coordinates":[-99.11320933724107,23.883390932845316]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"tla1c","Esc_norm_1":"Centro de Actualización del Magisterio","Estado":"Tlaxcala"},"geometry":{"type":"Point","coordinates":[-98.2627307440286,19.327751503828893]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"ver01","Esc_norm_1":"Centro de Estudios Superiores de Educación Rural \"Luis Hidalgo Monroy\"","Estado":"Veracruz"},"geometry":{"type":"Point","coordinates":[-98.32144138661067,21.29397878329428]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"yuc07","Esc_norm_1":"Benemérita y Centenaria Escuela Normal de Educación Primaria \"RodolfoMenéndez de la Peña\"","Estado":"Yucatan"},"geometry":{"type":"Point","coordinates":[-89.66430647686241,20.985323572724724]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"zac1c","Esc_norm_1":"Centro de Actualización del Magisterio","Estado":"Zacatecas"},"geometry":{"type":"Point","coordinates":[-102.56902716607084,22.76599672736711]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"zac01","Esc_norm_1":"Escuela Normal Experimental \"Salvador Varela Reséndiz\"","Estado":"Zacatecas"},"geometry":{"type":"Point","coordinates":[-103.11858734433042,21.385066599643892]}}]};
+const radioData = {"type":"FeatureCollection","name":"Experiencias_radiales_DGESUM_2","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:OGC:1.3:CRS84"}},"features":[{"type":"Feature","properties":{"municipio":"Aguascalientes","localidad":"Aguascalientes","Clave_DGES":"ags03","Esc_norm_1":"Escuela Normal Superior Federal de Aguascalientes \"Profr José SantosValdés\"","Estado":"Aguascalientes","Pro_ radio":"Receso en el aula","Contacto":"Andrés Valdivia Ruiz","Correo-e":"andres.valdivia@iea.edu.mx","Enlaces":null},"geometry":{"type":"Point","coordinates":[-102.27411714958674,21.89790159967913]}},{"type":"Feature","properties":{"municipio":"Ensenada","localidad":"Ensenada","Clave_DGES":"bca02","Esc_norm_1":"Benemérita Escuela Normal Estatal, Profesor Jesús Prado Luna","Estado":"Baja California","Pro_ radio":"Podcast Normalista | Paradigma Normalista","Contacto":"Sergio Armando Covarrubias Mercado","Correo-e":"scovarrubias@benejpl.edu.mx","Enlaces":null},"geometry":{"type":"Point","coordinates":[-116.60640072031697,31.884790920264834]}},{"type":"Feature","properties":{"municipio":"Tijuana","localidad":"Tijuana","Clave_DGES":"bca09","Esc_norm_1":"Escuela Normal Fronteriza Tijuana","Estado":"Baja California","Pro_ radio":"Voz Normalista","Contacto":"Catalina Guadalupe Ortiz Macias","Correo-e":null,"Enlaces":"https://normalfronterizatijuana.edu.mx/noticias-y-avisos/programa-de-radio-educativo/"},"geometry":{"type":"Point","coordinates":[-116.92839811987727,32.48098349978875]}},{"type":"Feature","properties":{"municipio":"Mexicali","localidad":"Mexicali","Clave_DGES":"bca04","Esc_norm_1":"Benemérita Escuela Normal Urbana Federal \"Fronteriza\" de Mexicali","Estado":"Baja California","Pro_ radio":"Radio BENUFF","Contacto":"Enrique Felix Rangel | Adriel Quintero","Correo-e":null,"Enlaces":"https://www.facebook.com/reel/2389014968231199"},"geometry":{"type":"Point","coordinates":[-115.4428443196096,32.63001228024257]}},{"type":"Feature","properties":{"municipio":"La Paz","localidad":"La Paz","Clave_DGES":"bcs7r","Esc_norm_1":"Escuela Superior de Cultura Física de Baja California Sur","Estado":"Baja California Sur","Pro_ radio":"Radio Escufi","Contacto":"Gloria Consevit Beltrán Moreno","Correo-e":null,"Enlaces":"https://www.youtube.com/@Escufi-BCS/videos"},"geometry":{"type":"Point","coordinates":[-110.30336613973554,24.13264270989322]}},{"type":"Feature","properties":{"municipio":"Loreto","localidad":"Loreto","Clave_DGES":"bcs03","Esc_norm_1":"Centro Regional de Educación Normal \"Marcelo Rubio Ruiz\"","Estado":"Baja California Sur","Pro_ radio":"Frecuencia Normalista","Contacto":"Cesar Álvarez Rodríguez","Correo-e":null,"Enlaces":null},"geometry":{"type":"Point","coordinates":[-111.3490898604087,26.007428920208554]}},{"type":"Feature","properties":{"municipio":"La Paz","localidad":"La Paz","Clave_DGES":"bcs01","Esc_norm_1":"Benemérita Escuela Normal Urbana \"Profr Domingo Carballo Félix\"","Estado":"Baja California Sur","Pro_ radio":"Radio BENU “Entre benemeritos”","Contacto":"Yoseline Guadalupe Appel Zazueta","Correo-e":"escufilpz@gmail.com","Enlaces":"https://www.youtube.com/@Escufi-BCS/videos"},"geometry":{"type":"Point","coordinates":[-110.31073528980176,24.148710969735532]}},{"type":"Feature","properties":{"municipio":"La Paz","localidad":"La Paz","Clave_DGES":"bcs02","Esc_norm_1":"Escuela Normal Superior del Estado de Baja California Sur","Estado":"Baja California Sur","Pro_ radio":"Sintonia educativa","Contacto":"Aurora Bañuelos Cadena","Correo-e":null,"Enlaces":"https://www.facebook.com/normalsuperiorlapazbcs/videos/36756636770617933"},"geometry":{"type":"Point","coordinates":[-110.31595859990944,24.111323789761116]}},{"type":"Feature","properties":{"municipio":"Chihuahua","localidad":"Chihuahua","Clave_DGES":"chi01","Esc_norm_1":"Institución Benemérita y Centenaria Escuela Normal del Estado deChihuahua Profesor Luis Urías Belderráin","Estado":"Chihuahua","Pro_ radio":"IByCENECH Radio","Contacto":"Luis Carlos Lamas Mendoza","Correo-e":null,"Enlaces":null},"geometry":{"type":"Point","coordinates":[-106.07471034021,28.666024240226534]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"cdmx02","Esc_norm_1":"Benemérita Escuela Nacional de Maestros","Estado":"Ciudad de México","Pro_ radio":"RadioBENM","Contacto":"Asunción Cabrera Castellanos","Correo-e":null,"Enlaces":null},"geometry":{"type":"Point","coordinates":[-99.167519363228,19.445149401223944]}},{"type":"Feature","properties":{"municipio":"Saltillo","localidad":"Saltillo","Clave_DGES":"coh06","Esc_norm_1":"Escuela Normal Superior del Estado de Coahuila","Estado":"Coahuila","Pro_ radio":"La radio normalista como acompañamiento cocurricular en la formación de futuros docentes","Contacto":"Dalia Reyes Valdés | Francisco Javier Alvarado García","Correo-e":null,"Enlaces":null},"geometry":{"type":"Point","coordinates":[-100.98149281963788,25.43011784985896]}},{"type":"Feature","properties":{"municipio":"Toluca","localidad":"Toluca de Lerdo","Clave_DGES":"mex32","Esc_norm_1":"Escuela Normal No 1 de Toluca","Estado":"Estado de México","Pro_ radio":"Producción radiofónica","Contacto":"Alfonso Soto Camacho","Correo-e":null,"Enlaces":null},"geometry":{"type":"Point","coordinates":[-99.64188796985388,19.296951159968103]}},{"type":"Feature","properties":{"municipio":"Guanajuato","localidad":"Guanajuato","Clave_DGES":"gto07","Esc_norm_1":"Benemérita y Centenaria Escuela Normal Ofi cial de Guanajuato","Estado":"Guanajuato","Pro_ radio":"Radio BCENOG","Contacto":"Ma. del Rocío Ortiz Rico","Correo-e":"mr_ortiz_r@bcenog.edu.mx","Enlaces":"https://open.spotify.com/show/5KCiZeF6JEOYI3krKinaae"},"geometry":{"type":"Point","coordinates":[-101.24976363018737,21.008376460405373]}},{"type":"Feature","properties":{"municipio":"Guanajuato","localidad":"Guanajuato","Clave_DGES":"gto01","Esc_norm_1":"Escuela Normal Superior Oficial de Guanajuato","Estado":"Guanajuato","Pro_ radio":"Ensognación","Contacto":"José Luis Samaguey Rentería","Correo-e":"jl.samagueyrenteria@ensog.edu.mx","Enlaces":"https://open.spotify.com/show/7fH15ovYtBqyoDCIYurC40?si=6e9FYonOSU-qtHGYj_Bi7w"},"geometry":{"type":"Point","coordinates":[-101.27853561972302,21.012877929672754]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"gto08","Esc_norm_1":"Centro de Estudios Superiores de Educación Especializada","Estado":"Guanajuato","Pro_ radio":"Revista Sonora CESEE en línea","Contacto":"Yammir López Brito","Correo-e":"yammirlopezbrito@cesee.edu.mx","Enlaces":null},"geometry":{"type":"Point","coordinates":[-101.6314425876053,21.10481211688574]}},{"type":"Feature","properties":{"municipio":"Arandas","localidad":"Arandas","Clave_DGES":"jal10","Esc_norm_1":"Escuela Normal para Educadoras de Arandas","Estado":"Jalisco","Pro_ radio":"Radio Educa","Contacto":"José Antonio Rodríguez González","Correo-e":"joseantonio.rodriguez@enea.edu.mx","Enlaces":"https://www.facebook.com/p/Radio-Educa-100064652845260/"},"geometry":{"type":"Point","coordinates":[-102.34017723988768,20.7024397996571]}},{"type":"Feature","properties":{"municipio":"Colotlán","localidad":"Colotlán","Clave_DGES":"jal04","Esc_norm_1":"Escuela Normal Experimental de Colotlán","Estado":"Jalisco","Pro_ radio":"Podcast Normalista","Contacto":"Juan Manuel Cárdenas Gándara","Correo-e":null,"Enlaces":null},"geometry":{"type":"Point","coordinates":[-103.27278781020925,22.10744745043951]}},{"type":"Feature","properties":{"municipio":"Guadalajara","localidad":"Guadalajara","Clave_DGES":"jal07","Esc_norm_1":"Escuela Normal Superior de Jalisco","Estado":"Jalisco","Pro_ radio":"Normaliza Las Matemáticas","Contacto":"Ana Cabrera","Correo-e":"extension@ensj.edu.mx","Enlaces":"https://www.youtube.com/@NormalicemosLasMatem%C3%A1ticas"},"geometry":{"type":"Point","coordinates":[-103.3359378796294,20.71139671988277]}},{"type":"Feature","properties":{"municipio":"","localidad":"","Clave_DGES":"mor01","Esc_norm_1":"Escuela Normal Rural \"Gral Emiliano Zapata\"","Estado":"Morelos","Pro_ radio":"Voces y saberes. El podcast","Contacto":"Saúl Ferrer Aragón","Correo-e":"saul.ferrer@iebem.edu.mx","Enlaces":"https://www.youtube.com/@VocesysaberesElpodcast"},"geometry":{"type":"Point","coordinates":[-98.76167452256112,18.729785258882657]}},{"type":"Feature","properties":{"municipio":"San Luis Potosí","localidad":"San Luis Potosí","Clave_DGES":"slp03","Esc_norm_1":"Benemérita y Centenaria Escuela Normal del Estado de San Luis Potosí","Estado":"San Luis Potosí","Pro_ radio":"BENECE Podcast","Contacto":"Manuel Alejandro Islas Peña","Correo-e":"mislas@beceneslp.edu.mx","Enlaces":"https://open.spotify.com/show/71lxIlzZ00fItLq2vI9I91?si=YLUqnmayRzuk7xO9ZPut0A"},"geometry":{"type":"Point","coordinates":[-100.98429043965206,22.154510209678506]}},{"type":"Feature","properties":{"municipio":"Navojoa","localidad":"Navojoa","Clave_DGES":"son06","Esc_norm_1":"Centro Regional de Educación Normal \"Rafael Ramírez Castañeda\"(Navojoa)","Estado":"Sonora","Pro_ radio":"PODCAST \"Tras la superación\"","Contacto":"Dulce Yuridia Rabago Morales","Correo-e":"Cren.drabago@creson.edu.mx","Enlaces":"https://www.facebook.com/share/v/19MpAgxAon/"},"geometry":{"type":"Point","coordinates":[-109.44030554996112,27.050765979566336]}},{"type":"Feature","properties":{"municipio":"Cajeme","localidad":"Providencia","Clave_DGES":"son01","Esc_norm_1":"Escuela Normal Estatal de Especialización","Estado":"Sonora","Pro_ radio":"Voces inclusivas","Contacto":"Verónica Sarahí Pinzón Gómez | Daniela Cancio Ayón","Correo-e":null,"Enlaces":null},"geometry":{"type":"Point","coordinates":[-109.98363989976156,27.508163760449236]}},{"type":"Feature","properties":{"municipio":"Hermosillo","localidad":"Hermosillo","Clave_DGES":"son03","Esc_norm_1":"Escuela Normal del Estado \"Profr Jesús Manuel Bustamante Mungarro\"","Estado":"Sonora","Pro_ radio":"Podcast Educativo","Contacto":"Yazmín Guadalupe Soto Medina","Correo-e":null,"Enlaces":null},"geometry":{"type":"Point","coordinates":[-110.94252340013475,29.0783384700444]}}]};
+
+/* ============================================================
+   1. MAPA BASE
+   ============================================================ */
+const map = L.map('map', { zoomControl:false }).fitBounds([[14.5,-118],[33,-86]]);
+L.control.zoom({ position:'topright' }).addTo(map);
+
+const basemaps = {
+  sat: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution:'Tiles &copy; Esri' }),
+  osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution:'&copy; OpenStreetMap' }),
+  topo: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { attribution:'&copy; OpenTopoMap' })
+};
+basemaps.sat.addTo(map);
+document.getElementById('basemap-select').addEventListener('change', (e)=>{
+  Object.values(basemaps).forEach(l=>map.removeLayer(l));
+  basemaps[e.target.value].addTo(map);
+});
+
+/* ============================================================
+   2. CAPA BASE: 259 escuelas normales (puntos discretos)
+   ============================================================ */
+const radioKeys = new Set(radioData.features.map(f=>f.properties.Clave_DGES));
+
+const baseLayersByState = {};
+const baseMarkerIndex = [];
+
+baseData.features.forEach(feature=>{
+  const p = feature.properties;
+  const [lon, lat] = feature.geometry.coordinates;
+  const hasRadio = radioKeys.has(p.Clave_DGES);
+  if(hasRadio) return; // esas se dibujan en la capa de radio, no aquí
+
+  const marker = L.circleMarker([lat, lon], {
+    radius: 3.5,
+    color: 'rgba(246,240,227,0.85)',
+    weight: 1,
+    fillColor: 'rgba(120,110,95,0.55)',
+    fillOpacity: 0.75,
+    pane: 'overlayPane'
+  });
+  marker.bindTooltip(p.Esc_norm_1 || 'Escuela normal', {direction:'top', opacity:0.9});
+
+  const estado = p.Estado || 'Sin estado';
+  if(!baseLayersByState[estado]) baseLayersByState[estado] = L.layerGroup();
+  baseLayersByState[estado].addLayer(marker);
+  baseMarkerIndex.push({nombre:p.Esc_norm_1, marker, latlng:[lat,lon]});
+});
+
+/* ============================================================
+   3. CAPA DE EXPERIENCIAS RADIALES (marcadores destacados)
+   ============================================================ */
+function parseEnlaces(raw){
+  if(!raw) return [];
+  return raw.split(/<br\s*\/?>/i).map(s=>s.trim()).filter(Boolean).map(line=>{
+    const m = line.match(/^([^:]{1,30}):\s*(https?:\/\/.+)$/i);
+    if(m) return {label:m[1].trim(), url:m[2].trim()};
+    return {label:'Enlace', url:line};
+  });
+}
+
+const radioIcon = L.divIcon({
+  className: '',
+  html: '<div style="width:16px;height:16px;border-radius:50%;background:#9B2247;border:2px solid #161A1D;box-shadow:0 0 0 3px rgba(155,34,71,0.35);"></div>',
+  iconSize:[16,16],
+  iconAnchor:[8,8]
+});
+
+const radioLayersByState = {};
+const radioMarkerIndex = [];
+const highlightedFeatures = [];
+
+radioData.features.forEach(feature=>{
+  const p = feature.properties;
+  const [lon, lat] = feature.geometry.coordinates;
+  const links = parseEnlaces(p['Enlaces']);
+
+  const marker = L.marker([lat, lon], { icon: radioIcon });
+
+  let linksHtml = '<div class="popup-empty">Sin enlaces registrados todavía.</div>';
+  if(links.length){
+    linksHtml = '<div class="popup-links">' + links.map(l=>
+      `<a href="${l.url}" target="_blank" rel="noopener">↗ ${l.label}</a>`
+    ).join('') + '</div>';
+  }
+
+  const contactoHtml = p['Contacto'] ? `<tr><td class="k">Contacto</td><td>${p['Contacto']}</td></tr>` : '';
+  const correoHtml = p['Correo-e'] ? `<tr><td class="k">Correo</td><td>${p['Correo-e']}</td></tr>` : '';
+
+  marker.bindPopup(`
+    <div class="popup-title">${p.Esc_norm_1 || ''}</div>
+    <div class="popup-meta">${p.municipio || ''}, ${p.Estado || ''}</div>
+    <table class="popup-table">
+      <tr><td class="k">Programa</td><td>${p['Pro_ radio'] || '—'}</td></tr>
+      ${contactoHtml}
+      ${correoHtml}
+    </table>
+    ${linksHtml}
+  `, {maxWidth: 280});
+
+  const estado = p.Estado || 'Sin estado';
+  if(!radioLayersByState[estado]) radioLayersByState[estado] = L.layerGroup();
+  radioLayersByState[estado].addLayer(marker);
+  radioMarkerIndex.push({nombre:p.Esc_norm_1, programa:p['Pro_ radio'], marker, latlng:[lat,lon]});
+
+  if(links.length){
+    highlightedFeatures.push({nombre:p.Esc_norm_1, estado:p.Estado, programa:p['Pro_ radio'], marker, latlng:[lat,lon]});
+  }
+});
+
+// Agregar todas las capas al mapa por defecto
+Object.values(baseLayersByState).forEach(l=>l.addTo(map));
+Object.values(radioLayersByState).forEach(l=>l.addTo(map));
+
+/* ============================================================
+   3.5 FILTROS EN CASCADA: ESTADO -> ESCUELA (nombres exactos del .dbf)
+   ============================================================ */
+const estadoSelect = document.getElementById('estado-select');
+const escuelaSelect = document.getElementById('escuela-select');
+
+const estadosOrdenados = Array.from(new Set(baseData.features.map(f=>f.properties.Estado || 'Sin estado'))).sort();
+estadosOrdenados.forEach(estado=>{
+  const opt = document.createElement('option');
+  opt.value = estado;
+  opt.textContent = estado;
+  estadoSelect.appendChild(opt);
+});
+
+function irAEscuela(feature){
+  const [lon, lat] = feature.geometry.coordinates;
+  const radioItem = radioMarkerIndex.find(m=> m.latlng[0] === lat && m.latlng[1] === lon);
+  map.setView([lat, lon], 13);
+  if(radioItem){
+    radioItem.marker.openPopup();
+  } else {
+    L.popup().setLatLng([lat, lon]).setContent(`<div class="popup-title">${feature.properties.Esc_norm_1}</div><div class="popup-meta">${feature.properties.municipio}, ${feature.properties.Estado}</div>`).openOn(map);
+  }
+}
+
+estadoSelect.addEventListener('change', ()=>{
+  const estado = estadoSelect.value;
+  escuelaSelect.innerHTML = '';
+
+  if(!estado){
+    escuelaSelect.disabled = true;
+    const opt = document.createElement('option');
+    opt.value = '';
+    opt.textContent = '— Primero selecciona un estado —';
+    escuelaSelect.appendChild(opt);
+    return;
+  }
+
+  escuelaSelect.disabled = false;
+  const defaultOpt = document.createElement('option');
+  defaultOpt.value = '';
+  defaultOpt.textContent = '— Selecciona una escuela —';
+  escuelaSelect.appendChild(defaultOpt);
+
+  const escuelasDelEstado = baseData.features
+    .filter(f => (f.properties.Estado || 'Sin estado') === estado)
+    .sort((a,b) => (a.properties.Esc_norm_1||'').localeCompare(b.properties.Esc_norm_1||''));
+
+  escuelasDelEstado.forEach(feature=>{
+    const p = feature.properties;
+    const opt = document.createElement('option');
+    opt.value = p.Clave_DGES;
+    opt.textContent = p.Esc_norm_1;
+    escuelaSelect.appendChild(opt);
+  });
+});
+
+escuelaSelect.addEventListener('change', ()=>{
+  const clave = escuelaSelect.value;
+  if(!clave) return;
+  const feature = baseData.features.find(f=>f.properties.Clave_DGES === clave);
+  if(!feature) return;
+  irAEscuela(feature);
+});
+
+
+/* ============================================================
+   4. PANEL: POR ESTADO
+   ============================================================ */
+const allStates = Array.from(new Set(baseData.features.map(f=>f.properties.Estado || 'Sin estado'))).sort();
+const panelEstados = document.getElementById('panel-estados');
+
+allStates.forEach(estado=>{
+  const totalEnEstado = baseData.features.filter(f=>(f.properties.Estado||'Sin estado')===estado).length;
+  const conRadio = radioData.features.filter(f=>(f.properties.Estado||'Sin estado')===estado).length;
+
+  const row = document.createElement('div');
+  row.className = 'state-row';
+  row.innerHTML = `
+    <input type="checkbox" checked data-estado="${estado}">
+    <span class="state-name">${estado}</span>
+    <span class="state-count"><b>${conRadio}</b>/${totalEnEstado}</span>
+  `;
+  const checkbox = row.querySelector('input');
+
+  function toggle(){
+    const on = checkbox.checked;
+    const baseLayer = baseLayersByState[estado];
+    const radioLayer = radioLayersByState[estado];
+    if(baseLayer){ on ? baseLayer.addTo(map) : map.removeLayer(baseLayer); }
+    if(radioLayer){ on ? radioLayer.addTo(map) : map.removeLayer(radioLayer); }
+  }
+  checkbox.addEventListener('change', toggle);
+
+  row.addEventListener('click', (e)=>{
+    if(e.target === checkbox) return;
+    const pts = [];
+    baseData.features.filter(f=>(f.properties.Estado||'Sin estado')===estado).forEach(f=>pts.push([f.geometry.coordinates[1], f.geometry.coordinates[0]]));
+    if(pts.length) map.fitBounds(pts, {maxZoom:9});
+  });
+
+  panelEstados.appendChild(row);
+});
+
+/* ============================================================
+   5. PANEL: CON PRODUCCIÓN ACTIVA
+   ============================================================ */
+const panelDestacadas = document.getElementById('panel-destacadas');
+
+if(highlightedFeatures.length === 0){
+  panelDestacadas.innerHTML = '<div style="color:var(--muted);font-size:12.5px;padding:8px 4px;">Todavía no hay experiencias con enlaces registrados.</div>';
+} else {
+  highlightedFeatures.sort((a,b)=>a.nombre.localeCompare(b.nombre));
+  highlightedFeatures.forEach(item=>{
+    const el = document.createElement('div');
+    el.className = 'highlight-item';
+    el.innerHTML = `
+      <div class="h-name">${item.nombre}</div>
+      <div class="h-meta">${item.programa || ''} · ${item.estado || ''}</div>
+      <div class="h-pill"><span class="pd"></span>En aire</div>
+    `;
+    el.addEventListener('click', ()=>{
+      map.setView(item.latlng, 11);
+      item.marker.openPopup();
+    });
+    panelDestacadas.appendChild(el);
+  });
+}
+
+/* ============================================================
+   6. TABS
+   ============================================================ */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ============================================================
+   7. AUDIO DESTACADO (oculto, con botón de play/pausa)
+   ============================================================ */
+const audioFrame = document.getElementById('audio-hidden-frame');
+const audioToggle = document.getElementById('audio-toggle');
+const scWidget = SC.Widget(audioFrame);
+let audioReady = false;
+
+scWidget.bind(SC.Widget.Events.READY, ()=>{
+  audioReady = true;
+  // Intenta reproducir automáticamente. Los navegadores suelen bloquear
+  // el audio con sonido sin interacción previa del usuario; si eso pasa,
+  // el botón queda disponible para iniciar la reproducción manualmente.
+  scWidget.play();
+});
+
+scWidget.bind(SC.Widget.Events.PLAY, ()=>{ audioToggle.classList.add('playing'); });
+scWidget.bind(SC.Widget.Events.PAUSE, ()=>{ audioToggle.classList.remove('playing'); });
+scWidget.bind(SC.Widget.Events.FINISH, ()=>{ audioToggle.classList.remove('playing'); });
+
+audioToggle.addEventListener('click', ()=>{
+  if(!audioReady) return;
+  scWidget.isPaused((paused)=>{
+    if(paused){ scWidget.play(); } else { scWidget.pause(); }
+  });
+});
+</script>
+</body>
+
+</html>
