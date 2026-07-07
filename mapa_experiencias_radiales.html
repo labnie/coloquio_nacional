@@ -135,14 +135,12 @@
     display:block;
   }
 
-  #floating-spotify{
-    position:absolute;bottom:16px;right:16px;z-index:900;
-    width:320px;max-width:calc(100% - 32px);
-    border-radius:12px;overflow:hidden;
-    box-shadow:0 4px 16px rgba(0,0,0,0.3);
-    background:#fff;
+  #sidebar-spotify{
+    margin:14px 18px 0;
+    border-radius:10px;overflow:hidden;
+    box-shadow:0 2px 8px rgba(0,0,0,0.15);
   }
-  #floating-spotify iframe{display:block;}
+  #sidebar-spotify iframe{display:block;}
 
   /* ---------- Map area ---------- */
   #map-wrap{flex:1;position:relative;}
@@ -205,8 +203,8 @@
     #basemap-control select{font-size:16px;padding:6px 6px;}
     #map-logo-wrap{padding:7px 10px;bottom:14px;left:14px;}
     #map-logo{max-width:130px;max-height:65px;}
-    #floating-spotify{width:260px;bottom:12px;right:12px;}
-    #floating-spotify iframe{height:64px;}
+    #sidebar-spotify{margin:12px 14px 0;}
+    #sidebar-spotify iframe{height:64px;}
   }
 </style>
 </head>
@@ -217,6 +215,12 @@
       <div class="eyebrow"><span class="dial-dot"></span> Mapa interactivo</div>
       <h1 class="display">Tejiendo redes radiales normalistas</h1>
       <p class="event-name">Coloquio Nacional de Experiencias Radiales en comunidades normalistas</p>
+    </div>
+    <div id="sidebar-spotify">
+      <iframe src="https://open.spotify.com/embed/show/7BajJlirueTctxHYUTWXY8?utm_source=generator"
+        width="100%" height="80" frameborder="0" allowfullscreen=""
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy">
+      </iframe>
     </div>
     <div class="select-wrap">
       <label for="estado-select">1. Selecciona un estado</label>
@@ -258,12 +262,6 @@
     <div id="map-logo-wrap">
       <img id="map-logo" src="https://github.com/labnie/coloquio_nacional/blob/main/Logos%20oficiales_Web.png?raw=true" alt="Logotipo del Coloquio Nacional de Experiencias Radiales en comunidades normalistas">
     </div>
-    <div id="floating-spotify">
-      <iframe src="https://open.spotify.com/embed/show/7BajJlirueTctxHYUTWXY8?utm_source=generator"
-        width="100%" height="80" frameborder="0" allowfullscreen=""
-        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy">
-      </iframe>
-    </div>
   </div>
 </div>
 
@@ -295,11 +293,12 @@ document.getElementById('basemap-select').addEventListener('change', (e)=>{
 const radioKeys = new Set(radioData.features.map(f=>f.properties.Clave_DGES));
 
 function buildEscuelaSinRadioPopup(p){
+  const claveParam = encodeURIComponent(p.Clave_DGES || '');
   return `
     <div class="popup-title">${p.Esc_norm_1 || ''}</div>
     <div class="popup-meta">${p.municipio ? p.municipio + ', ' : ''}${p.Estado || ''}</div>
     <div class="popup-pill-off">Aún sin experiencia radial registrada</div>
-    <a href="formulario_registro.html" class="popup-cta">Registrar la experiencia de esta escuela →</a>
+    <a href="formulario_registro.html?clave=${claveParam}" class="popup-cta">Registrar la experiencia de esta escuela →</a>
   `;
 }
 
