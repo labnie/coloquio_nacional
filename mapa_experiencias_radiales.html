@@ -151,9 +151,9 @@
   .leaflet-popup-content-wrapper{background:var(--panel);color:var(--paper);border-radius:10px;border:1px solid var(--line);}
   .leaflet-popup-tip{background:var(--panel);}
   .popup-title{font-weight:700;font-size:14px;margin-bottom:4px;}
-  .popup-meta{font-size:12px;color:var(--muted);margin-bottom:6px;}
+  .popup-meta{font-size:12px;color:var(--teal);font-weight:600;margin-bottom:6px;}
   .popup-table td{padding:2px 0;font-size:12px;vertical-align:top;}
-  .popup-table td.k{color:var(--muted);padding-right:8px;white-space:nowrap;}
+  .popup-table td.k{color:var(--amber-dim);font-weight:600;padding-right:8px;white-space:nowrap;}
   .popup-links{margin-top:8px;display:flex;flex-direction:column;gap:5px;}
   .popup-links a{
     color:var(--teal-bright);text-decoration:none;font-size:12px;font-weight:600;
@@ -161,6 +161,16 @@
   }
   .popup-links a:hover{text-decoration:underline;}
   .popup-empty{font-size:11.5px;color:var(--muted);font-style:italic;margin-top:6px;}
+  .popup-pill-off{
+    display:inline-block;margin-top:6px;font-size:10.5px;font-weight:700;letter-spacing:.3px;
+    text-transform:uppercase;color:var(--muted);background:var(--panel-2);
+    padding:4px 9px;border-radius:20px;
+  }
+  .popup-cta{
+    display:block;margin-top:10px;font-size:12.5px;font-weight:700;
+    color:var(--teal);text-decoration:none;
+  }
+  .popup-cta:hover{text-decoration:underline;}
 
   @media (prefers-reduced-motion: reduce){.dial-dot,.h-pill .pd{animation:none;}}
 
@@ -273,6 +283,15 @@ document.getElementById('basemap-select').addEventListener('change', (e)=>{
    ============================================================ */
 const radioKeys = new Set(radioData.features.map(f=>f.properties.Clave_DGES));
 
+function buildEscuelaSinRadioPopup(p){
+  return `
+    <div class="popup-title">${p.Esc_norm_1 || ''}</div>
+    <div class="popup-meta">${p.municipio ? p.municipio + ', ' : ''}${p.Estado || ''}</div>
+    <div class="popup-pill-off">Aún sin experiencia radial registrada</div>
+    <a href="formulario_registro.html" class="popup-cta">Registrar la experiencia de esta escuela →</a>
+  `;
+}
+
 const baseLayersByState = {};
 const baseMarkerIndex = [];
 
@@ -283,14 +302,15 @@ baseData.features.forEach(feature=>{
   if(hasRadio) return; // esas se dibujan en la capa de radio, no aquí
 
   const marker = L.circleMarker([lat, lon], {
-    radius: 3.5,
-    color: 'rgba(246,240,227,0.85)',
-    weight: 1,
-    fillColor: 'rgba(120,110,95,0.55)',
-    fillOpacity: 0.75,
+    radius: 4.5,
+    color: 'rgba(246,240,227,0.9)',
+    weight: 1.5,
+    fillColor: '#5A5650',
+    fillOpacity: 0.85,
     pane: 'overlayPane'
   });
   marker.bindTooltip(p.Esc_norm_1 || 'Escuela normal', {direction:'top', opacity:0.9});
+  marker.bindPopup(buildEscuelaSinRadioPopup(p), {maxWidth: 260});
 
   const estado = p.Estado || 'Sin estado';
   if(!baseLayersByState[estado]) baseLayersByState[estado] = L.layerGroup();
@@ -384,7 +404,7 @@ function irAEscuela(feature){
   if(radioItem){
     radioItem.marker.openPopup();
   } else {
-    L.popup().setLatLng([lat, lon]).setContent(`<div class="popup-title">${feature.properties.Esc_norm_1}</div><div class="popup-meta">${feature.properties.municipio}, ${feature.properties.Estado}</div>`).openOn(map);
+    L.popup().setLatLng([lat, lon]).setContent(buildEscuelaSinRadioPopup(feature.properties)).openOn(map);
   }
 }
 
