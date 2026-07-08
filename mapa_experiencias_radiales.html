@@ -181,12 +181,11 @@
   @media (prefers-reduced-motion: reduce){.dial-dot,.h-pill .pd,.radio-ping{animation:none;}}
 
   .radio-ping{
-    animation:radioPulse 1.8s ease-out infinite;
+    animation:radioPulse 1.7s ease-out infinite;
   }
   @keyframes radioPulse{
-    0%{transform:scale(0.55);opacity:0.85;}
-    70%{transform:scale(1.9);opacity:0;}
-    100%{opacity:0;}
+    0%{transform:scale(0.55);opacity:0.9;}
+    100%{transform:scale(2.1);opacity:0;}
   }
 
   #cartel-overlay{
@@ -396,7 +395,7 @@ const radioIcon = L.divIcon({
   className: '',
   html: `
     <div style="position:relative;width:28px;height:28px;">
-      <div class="radio-ping" style="position:absolute;top:2px;left:2px;width:24px;height:24px;border-radius:50%;background:rgba(155,34,71,0.55);"></div>
+      <div class="radio-ping" style="position:absolute;top:2px;left:2px;width:24px;height:24px;border-radius:50%;background:rgba(155,34,71,0.65);"></div>
       <div style="position:absolute;top:6px;left:6px;width:16px;height:16px;border-radius:50%;background:#9B2247;border:2px solid #161A1D;box-shadow:0 0 0 3px rgba(155,34,71,0.35);"></div>
     </div>
   `,
