@@ -88,6 +88,25 @@
   }
   .add-link:hover{border-color:var(--amber-dim);color:var(--amber);}
 
+  .programa-block{
+    background:var(--panel-2);border:1px solid var(--line);border-radius:10px;
+    padding:14px;margin-bottom:12px;
+  }
+  .programa-block-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+  .programa-block-header .programa-nombre{flex:1;background:#fff;}
+  .remove-programa{
+    background:transparent;border:none;color:#8A8378;font-size:19px;cursor:pointer;
+    padding:2px 8px;line-height:1;flex-shrink:0;
+  }
+  .remove-programa:hover{color:#D9705F;}
+  .programa-links{margin-bottom:8px;}
+  .programa-links .link-row{margin-bottom:8px;}
+  .add-link-mini{
+    background:transparent;border:1px dashed var(--line);color:#8A8378;
+    font-size:11.5px;padding:6px 10px;border-radius:6px;cursor:pointer;
+  }
+  .add-link-mini:hover{border-color:var(--teal);color:var(--teal);}
+
   .submit-btn{
     background:var(--amber);color:#FFFFFF;border:none;border-radius:9px;
     padding:14px 20px;font-size:14.5px;font-weight:700;cursor:pointer;letter-spacing:.3px;
@@ -136,8 +155,10 @@
       </div>
 
       <div class="field">
-        <label>Nombre del programa o podcast</label>
-        <input type="text" id="programa-input" placeholder="Ej. Voz Normalista">
+        <label>Programas o podcasts de radio</label>
+        <div class="hint">Si tu escuela tiene más de un programa, agrega uno por uno con sus propios enlaces.</div>
+        <div id="programa-list"></div>
+        <button type="button" class="add-link" id="add-programa-btn">+ Agregar otro programa</button>
       </div>
 
       <div class="field">
@@ -148,12 +169,6 @@
       <div class="field">
         <label>Correo (opcional)</label>
         <input type="email" id="correo-input" placeholder="contacto@ejemplo.mx">
-      </div>
-
-      <div class="field">
-        <label>Enlaces a sus producciones</label>
-        <div id="link-list"></div>
-        <button type="button" class="add-link" id="add-link-btn">+ Agregar enlace</button>
       </div>
 
       <button type="submit" class="submit-btn" id="submit-btn">Enviar registro</button>
@@ -266,22 +281,52 @@ if(claveDesdeMapa){
   seleccionarEscuela(claveDesdeMapa);
 }
 
-// ---- enlaces dinámicos ----
-const linkList = document.getElementById('link-list');
-function addLinkRow(){
+// ---- programas dinámicos, cada uno con sus propios enlaces ----
+const programaList = document.getElementById('programa-list');
+
+function addLinkRowTo(container, label, url){
   const row = document.createElement('div');
   row.className = 'link-row';
-  row.style.marginBottom = '8px';
   row.innerHTML = `
-    <input type="text" class="link-label" placeholder="Plataforma">
-    <input type="text" class="link-url" placeholder="https://…">
+    <input type="text" class="link-label" placeholder="Plataforma" value="${label ? label.replace(/"/g,'&quot;') : ''}">
+    <input type="text" class="link-url" placeholder="https://…" value="${url ? url.replace(/"/g,'&quot;') : ''}">
     <button type="button" class="remove-link">×</button>
   `;
   row.querySelector('.remove-link').addEventListener('click', ()=> row.remove());
-  linkList.appendChild(row);
+  container.appendChild(row);
 }
-addLinkRow();
-document.getElementById('add-link-btn').addEventListener('click', addLinkRow);
+
+function addProgramaBlock(){
+  const block = document.createElement('div');
+  block.className = 'programa-block';
+  block.innerHTML = `
+    <div class="programa-block-header">
+      <input type="text" class="programa-nombre" placeholder="Nombre del programa o podcast">
+      <button type="button" class="remove-programa" title="Quitar este programa">×</button>
+    </div>
+    <div class="programa-links"></div>
+    <button type="button" class="add-link-mini">+ Agregar enlace a este programa</button>
+  `;
+  const linksContainer = block.querySelector('.programa-links');
+  addLinkRowTo(linksContainer, '', '');
+
+  block.querySelector('.add-link-mini').addEventListener('click', ()=> addLinkRowTo(linksContainer, '', ''));
+
+  block.querySelector('.remove-programa').addEventListener('click', ()=>{
+    if(programaList.children.length > 1){
+      block.remove();
+    } else {
+      block.querySelector('.programa-nombre').value = '';
+      linksContainer.innerHTML = '';
+      addLinkRowTo(linksContainer, '', '');
+    }
+  });
+
+  programaList.appendChild(block);
+}
+
+addProgramaBlock();
+document.getElementById('add-programa-btn').addEventListener('click', addProgramaBlock);
 
 // ---- envío real a Google Sheets (vía Apps Script) ----
 document.getElementById('registro-form').addEventListener('submit', async (e)=>{
@@ -297,18 +342,34 @@ document.getElementById('registro-form').addEventListener('submit', async (e)=>{
     return;
   }
 
-  const links = Array.from(document.querySelectorAll('.link-row')).map(row=>({
-    label: row.querySelector('.link-label').value.trim(),
-    url: row.querySelector('.link-url').value.trim()
-  })).filter(l => l.url);
+  const nombresProgramas = [];
+  const enlacesConPrograma = [];
 
-  const enlaces = links.map(l => l.label ? `${l.label}: ${l.url}` : l.url).join(' | ');
+  document.querySelectorAll('.programa-block').forEach(block=>{
+    const nombreProg = block.querySelector('.programa-nombre').value.trim();
+    if(nombreProg) nombresProgramas.push(nombreProg);
+
+    const linksDeEstePrograma = Array.from(block.querySelectorAll('.link-row')).map(row=>({
+      label: row.querySelector('.link-label').value.trim(),
+      url: row.querySelector('.link-url').value.trim()
+    })).filter(l => l.url);
+
+    linksDeEstePrograma.forEach(l=>{
+      const etiqueta = l.label
+        ? (nombreProg ? `${nombreProg} · ${l.label}` : l.label)
+        : (nombreProg || 'Enlace');
+      enlacesConPrograma.push(`${etiqueta}: ${l.url}`);
+    });
+  });
+
+  const programa = nombresProgramas.join(' | ');
+  const enlaces = enlacesConPrograma.join(' | ');
 
   const payload = new URLSearchParams({
     clave: escuelaSeleccionada.clave,
     escuela: escuelaSeleccionada.nombre,
     estado: escuelaSeleccionada.estado,
-    programa: document.getElementById('programa-input').value.trim(),
+    programa: programa,
     contacto: document.getElementById('contacto-input').value.trim(),
     correo: document.getElementById('correo-input').value.trim(),
     enlaces: enlaces
