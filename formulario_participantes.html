@@ -9,10 +9,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#FFFFFF;
+    --ink:#9B2247;
     --panel:#FFFFFF;
     --panel-2:#F2EFEA;
-    --paper:#161A1D;
+    --paper:#FFFFFF;
     --amber:#9B2247;
     --amber-dim:#611232;
     --teal:#1E5B4F;
@@ -36,23 +36,23 @@
   .badge{
     display:inline-flex;align-items:center;gap:8px;
     font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-    font-size:11px;letter-spacing:2.5px;color:var(--amber);text-transform:uppercase;
+    font-size:11px;letter-spacing:2.5px;color:var(--gold);text-transform:uppercase;
     margin-bottom:14px;
   }
   .dial-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);}
   .back-link{
-    display:inline-block;font-size:12.5px;color:var(--teal);text-decoration:none;
-    font-weight:600;margin-bottom:18px;
+    display:inline-block;font-size:12.5px;color:#fff;text-decoration:underline;
+    font-weight:600;margin-bottom:18px;opacity:0.9;
   }
-  .back-link:hover{text-decoration:underline;}
+  .back-link:hover{opacity:1;}
 
   h1{font-size:clamp(24px,4vw,32px);margin:0 0 10px;line-height:1.2;}
-  .subtitle{color:#5C5548;font-size:14.5px;line-height:1.55;max-width:520px;margin:0 0 32px;}
+  .subtitle{color:rgba(255,255,255,0.85);font-size:14.5px;line-height:1.55;max-width:520px;margin:0 0 32px;}
 
   form{display:flex;flex-direction:column;gap:22px;}
   .field{display:flex;flex-direction:column;gap:7px;}
-  label{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600;}
-  .hint{font-size:11.5px;color:#7d766a;margin-top:2px;}
+  label{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.8);font-weight:600;}
+  .hint{font-size:11.5px;color:rgba(255,255,255,0.65);margin-top:2px;}
 
   input[type=text], input[type=email], input[type=tel], select, textarea{
     width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;
@@ -62,7 +62,7 @@
   select:disabled{opacity:.6;cursor:not-allowed;}
 
   .submit-btn{
-    background:var(--amber);color:#FFFFFF;border:none;border-radius:9px;
+    background:var(--amber);color:#FFFFFF;border:2px solid rgba(255,255,255,0.55);border-radius:9px;
     padding:14px 20px;font-size:14.5px;font-weight:700;cursor:pointer;letter-spacing:.3px;
   }
   .submit-btn:hover{background:#7d1a38;}
