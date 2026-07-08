@@ -317,8 +317,8 @@
     <div id="basemap-control">
       <span>Capa:</span>
       <select id="basemap-select">
-        <option value="sat" selected>Satélite</option>
-        <option value="osm">Calles</option>
+        <option value="sat">Satélite</option>
+        <option value="osm" selected>Calles</option>
         <option value="topo">Topográfico</option>
       </select>
     </div>
@@ -363,7 +363,7 @@ const basemaps = {
   osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution:'&copy; OpenStreetMap' }),
   topo: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { attribution:'&copy; OpenTopoMap' })
 };
-basemaps.sat.addTo(map);
+basemaps.osm.addTo(map);
 document.getElementById('basemap-select').addEventListener('change', (e)=>{
   Object.values(basemaps).forEach(l=>map.removeLayer(l));
   basemaps[e.target.value].addTo(map);
