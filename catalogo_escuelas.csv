@@ -32,7 +32,9 @@ cam03,"Escuela Normal de Licenciatura en Educación Preescolar ""Profr PastorRod
 cam02,"Escuela Normal de Licenciatura en Educación Preescolar ""Profr PastorRodríguez Estrada"" (Módulo Hecelchakán)***",Campeche,
 cam11,Escuela Normal de Licenciatura en Educación Primaria (Módulo Hopelchén),Campeche,Hopelchén
 cam01,Escuela Normal de Licenciatura en Educación Primaria de Calkiní,Campeche,Calkiní
+chp06,"Escuela Normal Experimental ""Fray Matías Antonio de Córdova y Ordóñez""",Chiapas,San Cristobal de las Casas
 chp10,"Escuela Normal Experimental ""La Enseñanza"" e ""Ignacio Manuel Altamirano""",Chiapas,Tuxtla Chico
+Chp18,"Escuela Normal Indígena Intercultural Bilingüe ""Jacinto Canek""",Chiapas,Zinacatán
 chp03,Escuela Normal Rural Mactumactzá,Chiapas,Tuxtla Gutiérrez
 chp15,Escuela Normal Superior de Chiapas,Chiapas,Tuxtla Gutiérrez
 chp13,"Escuela Normal de Licenciatura en Educación Física ""Profr Pedro ReynolOzuna Henning""",Chiapas,Tuxtla Gutiérrez
@@ -50,7 +52,6 @@ chp16,"Escuela Normal de Licenciatura en Educación Primaria ""Villaflores""",Ch
 chp14,Escuela Normal de Licenciatura en Educación Primaria del Estado (Turnomatutino),Chiapas,Tuxtla Gutiérrez
 chp20,Escuela Normal de Licenciatura en Educación Primaria del Estado (Turnovespertino),Chiapas,Tuxtla Gutiérrez
 chi02,"Escuela Normal Experimental ""Miguel Hidalgo""",Chihuahua,Hidalgo del Parral
-chi07,"Escuela Normal Particular ""Yermo y Parres""",Chihuahua,
 chi03,"Escuela Normal Rural ""Ricardo Flores Magón""",Chihuahua,
 chi04,"Escuela Normal Superior ""Profr José E Medrano R""",Chihuahua,Chihuahua
 chi05,"Escuela Normal Superior ""Profr José E Medrano R"" (Unidad Juárez)",Chihuahua,Juárez
@@ -141,6 +142,7 @@ hgo03,"Centro Regional de Educación Normal ""Benito Juárez""",Hidalgo,Pachuca 
 hgo05,"Escuela Normal ""Sierra Hidalguense""",Hidalgo,Tianguistengo
 hgo04,"Escuela Normal ""Valle del Mezquital""",Hidalgo,
 hgo06,"Escuela Normal Experimental ""De Las Huastecas""",Hidalgo,Huejutla de Reyes
+Hgo01,"Escuela Normal Rural Luis Villarreal, El Mexe",Hidalgo,Francisco I. Madero
 hgo12,Escuela Normal Superior Pública del Estado de Hidalgo,Hidalgo,Pachuca de Soto
 jal11,Benemérita y Centenaria Escuela Normal de Jalisco,Jalisco,Guadalajara
 jal03,Centro Regional de Educación Normal de Cd Guzmán,Jalisco,
@@ -172,7 +174,7 @@ nul02,"Escuela Normal ""Ing Miguel F Martínez"" Centenaria y Benemérita",Nuevo
 nul01,"Escuela Normal ""Profr Serafín Peña""",Nuevo León,Montemorelos
 nul05,Escuela Normal Pablo Livas,Nuevo León,Sabinas Hidalgo
 nul04,"Escuela Normal Superior ""Profr Moisés Sáenz Garza""",Nuevo León,Monterrey
-nul03,Escuela Normal de Especialización,Nuevo León,Monterrey
+nul03,"Escuela Normal de Especialización ""Humberto Ramos Lozano""",Nuevo León,Monterrey
 oax03,Centro Regional de Educación Normal de Oaxaca,Oaxaca,Oaxaca de Juárez
 oax08,Centro Regional de Educación Normal de Río Grande,Oaxaca,Villa de Tututepec
 oax12,Escuela Normal Bilingüe e Intercultural de Oaxaca,Oaxaca,
@@ -201,7 +203,9 @@ qro02,"Centenaria y Benemérita Escuela Normal del Estado de Querétaro ""André
 qro04,Escuela Normal Superior de Querétaro,Queretaro,Querétaro
 qoo05,Centro Regional de Educación Normal,Quintana Roo,Felipe Carrillo Puerto
 qoo04,"Centro Regional de Educación Normal ""Javier Rojo Gómez""",Quintana Roo,Bacalar
+qroo02,"Centro Regional de Educación Normal ""Javier Rojo Gómez"", Unidad Cancún",Quintana Roo,Benito Juárez
 qoo1c,Centro de Actualización del Magisterio,Quintana Roo,
+qroo01,Escuela Normal Superior Andres Quintana Roo,Quintana Roo,Benito Juárez
 slp03,Benemérita y Centenaria Escuela Normal del Estado de San Luis Potosí,San Luis Potosí,San Luis Potosí
 slp01,"Centro Regional de Educación Normal ""Profra Amina Madera Lauterio""",San Luis Potosí,Cedral
 slp02,Escuela Normal Experimental Normalismo Mexicano,San Luis Potosí,Matehuala
@@ -215,7 +219,6 @@ sin03,"Escuela Normal Experimental de El Fuerte ""Profr Miguel Castillo Cruz""",
 sin05,"Escuela Normal Experimental de El Fuerte ""Profr Miguel Castillo Cruz""(Extensión Mazatlán)",Sinaloa,
 sin01,Escuela Normal de Especialización del Estado de Sinaloa,Sinaloa,
 sin02,Escuela Normal de Sinaloa,Sinaloa,Culiacán
-sin04,Escuela Normal del Pacífico,Sinaloa,
 son06,"Centro Regional de Educación Normal ""Rafael Ramírez Castañeda""(Navojoa)",Sonora,Navojoa
 son01,Escuela Normal Estatal de Especialización,Sonora,Cajeme
 son02,"Escuela Normal Rural ""Gral Plutarco Elías Calles""",Sonora,

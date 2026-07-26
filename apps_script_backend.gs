@@ -7,8 +7,13 @@
  * CÓMO CONFIGURARLO (una sola vez):
  * ─────────────────────────────────────────────────────────────
  * 1. Crea una Google Sheet nueva (sheets.google.com → En blanco).
- *    En la fila 1, agrega estos encabezados (opcional pero recomendado):
- *    Fecha | Clave_DGES | Escuela | Estado | Programa | Contacto | Correo | Enlaces
+ *    En la fila 1, agrega estos encabezados (importante, en este orden):
+ *    Fecha | Clave_DGES | Escuela | Estado | Programa | Contacto | Correo | Enlaces | Tipo
+ *
+ *    La columna "Tipo" es nueva: distingue si el registro es de una
+ *    escuela específica ("escuela") o de una Dirección Estatal / área sin
+ *    escuela específica ("direccion_estatal"). Si ya tenías esta Sheet
+ *    creada de antes, solo agrega la columna "Tipo" al final.
  *
  * 2. En esa misma Sheet: Extensiones → Apps Script.
  *
@@ -55,8 +60,9 @@ function doPost(e) {
     var contacto = params.contacto || '';
     var correo = params.correo || '';
     var enlaces = params.enlaces || '';
+    var tipo = params.tipo || 'escuela';
 
-    sheet.appendRow([new Date(), clave, escuela, estado, programa, contacto, correo, enlaces]);
+    sheet.appendRow([new Date(), clave, escuela, estado, programa, contacto, correo, enlaces, tipo]);
 
     if (CORREO_NOTIFICACION && CORREO_NOTIFICACION.indexOf('@') > -1) {
       var asunto = 'Nuevo registro de experiencia radial: ' + escuela;
@@ -97,7 +103,8 @@ function pruebaManual() {
       programa: 'Programa de Prueba',
       contacto: 'Alguien probando',
       correo: 'prueba@ejemplo.com',
-      enlaces: 'Spotify: https://open.spotify.com/show/prueba'
+      enlaces: 'Spotify: https://open.spotify.com/show/prueba',
+      tipo: 'escuela'
     }
   };
   doPost(fakeEvent);
