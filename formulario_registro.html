@@ -61,7 +61,7 @@
   }
   .toggle-row input{width:auto;flex-shrink:0;margin-top:3px;accent-color:var(--gold);}
 
-  input[type=text], input[type=email], textarea, select{
+  input[type=text], input[type=email], input[type=tel], textarea, select{
     width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;
     padding:12px 14px;color:#1A1714;font-size:16px;outline:none;font-family:inherit;
   }
@@ -187,6 +187,11 @@
       <div class="field">
         <label>Correo (opcional)</label>
         <input type="email" id="correo-input" placeholder="contacto@ejemplo.mx">
+      </div>
+
+      <div class="field">
+        <label>Teléfono celular</label>
+        <input type="tel" id="celular-input" placeholder="10 dígitos">
       </div>
 
       <button type="submit" class="submit-btn" id="submit-btn">Enviar registro</button>
@@ -419,6 +424,7 @@ document.getElementById('registro-form').addEventListener('submit', async (e)=>{
     programa: programa,
     contacto: document.getElementById('contacto-input').value.trim(),
     correo: document.getElementById('correo-input').value.trim(),
+    celular: document.getElementById('celular-input').value.trim(),
     enlaces: enlaces
   });
 
