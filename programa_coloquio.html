@@ -119,6 +119,65 @@
     .time-badge{width:58px;font-size:9.5px;padding:6px 3px;}
     .item::before{left:58px;}
   }
+
+  /* ---- Locus Normalista: elemento clickeable ---- */
+  .locus-trigger{cursor:pointer;}
+  .locus-trigger:hover .item-title{color:var(--teal-bright);text-decoration:underline;text-decoration-color:var(--teal);text-underline-offset:3px;}
+  .locus-hint{
+    display:inline-flex;align-items:center;gap:5px;
+    font-size:11px;font-weight:700;color:var(--teal);
+    margin-top:6px;letter-spacing:.3px;
+  }
+  .locus-hint svg{width:12px;height:12px;flex-shrink:0;}
+
+  /* ---- Modal overlay ---- */
+  .modal-overlay{
+    display:none;position:fixed;inset:0;background:rgba(10,11,13,0.72);
+    z-index:100;padding:20px;overflow-y:auto;
+    -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
+  }
+  .modal-overlay.active{display:flex;align-items:flex-start;justify-content:center;}
+  .modal-box{
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    max-width:620px;width:100%;margin-top:min(6vh,48px);
+    box-shadow:0 20px 60px rgba(0,0,0,0.45);
+    animation:modal-in .18s ease-out;
+  }
+  @keyframes modal-in{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  .modal-head{
+    display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+    padding:22px 24px 16px;border-bottom:1px solid var(--line);
+    position:sticky;top:0;background:var(--panel);border-radius:14px 14px 0 0;
+  }
+  .modal-head h2{margin:0 0 4px;font-size:20px;color:var(--paper);}
+  .modal-head p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.5;}
+  .modal-close{
+    flex-shrink:0;background:var(--panel-2);border:1px solid var(--line);color:var(--paper);
+    width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:16px;line-height:1;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .modal-close:hover{background:var(--amber-dim);border-color:var(--amber-dim);}
+  .modal-body{padding:18px 24px 26px;}
+
+  .salon-group{margin-bottom:22px;}
+  .salon-group:last-child{margin-bottom:0;}
+  .salon-title{
+    display:flex;align-items:center;gap:8px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+    color:var(--gold);margin-bottom:10px;
+  }
+  .salon-title::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;}
+
+  .mesa-card{
+    background:var(--panel-2);border:1px solid var(--line);border-radius:10px;
+    padding:12px 14px;margin-bottom:10px;
+  }
+  .mesa-card:last-child{margin-bottom:0;}
+  .mesa-programa{font-size:13.5px;font-weight:700;color:var(--paper);margin:0 0 4px;line-height:1.35;}
+  .mesa-escuela{font-size:12.5px;color:var(--muted);line-height:1.5;margin:0 0 4px;}
+  .mesa-contacto{font-size:12px;color:var(--teal-bright);line-height:1.4;margin:0;}
+  .mesa-contacto b{color:var(--muted);font-weight:600;}
 </style>
 </head>
 <body>
@@ -203,11 +262,15 @@
         </div>
       </div>
 
-      <div class="item">
+      <div class="item locus-trigger" onclick="openLocusModal()">
         <div class="time-badge">13:30 – 14:30</div>
         <div class="item-content">
           <div class="item-title">Locus Normalista</div>
           <div class="item-desc">12 demostraciones de producciones radiales normalistas, en tres espacios de 4 demos con 15 minutos cada una.</div>
+          <div class="locus-hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            Ver mesas y salones
+          </div>
         </div>
       </div>
 
@@ -299,6 +362,78 @@
     </div>
   </div>
 </div>
+
+<!-- ================= MODAL: LOCUS NORMALISTA ================= -->
+<div class="modal-overlay" id="locusModal" onclick="if(event.target===this) closeLocusModal()">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <h2>Locus Normalista</h2>
+        <p>Espacio para compartir experiencia · 13:30 – 14:30 h · Miércoles 17 de septiembre</p>
+      </div>
+      <button class="modal-close" onclick="closeLocusModal()" aria-label="Cerrar">&times;</button>
+    </div>
+    <div class="modal-body" id="locusModalBody"></div>
+  </div>
+</div>
+
+<script>
+const LOCUS_MESAS = {
+  "San Lucas": [
+    { escuela: 'Benemérita Escuela Normal Urbana "Profr. Domingo Carballo Félix"', programa: 'Radio BENU "Entre Beneméritos"', contacto: 'Yoseline Guadalupe Appel Zazueta' },
+    { escuela: 'Escuela Normal para Educadoras de Arandas', programa: 'RadioEduca', contacto: 'Sergio Eduardo Limón Jaime' },
+    { escuela: 'Escuela Normal Superior del Estado de Coahuila', programa: 'La Filosofación', contacto: 'Dalia Reyes Valdés' },
+    { escuela: 'Escuela Normal Superior Oficial de Guanajuato', programa: 'Podcast Ensognación – Edición Internormales', contacto: 'Jorge Luis Aguilar Andrade' }
+  ],
+  "Loreto": [
+    { escuela: 'Escuela Normal Fronteriza Tijuana', programa: 'Charlando Normal', contacto: 'Omar Moncayo Orezza' },
+    { escuela: 'Coordinación de Instituciones Formadoras y Actualizadoras de Docentes de Educación Superior', programa: 'Puntos sobre las IEAS | Actividad ParaNormal | Receso en el Aula | Sin Consenso', contacto: 'Andrés Valdivia Ruiz' },
+    { escuela: 'Escuela Normal de Valle de Bravo', programa: '"Entre Cuadernos y Aulas: el Viaje de una Normalista"', contacto: 'Diana Marín Vargas' },
+    { escuela: 'Escuela Normal "Ing. Miguel F. Martínez" Centenaria y Benemérita', programa: 'Voces Normalista', contacto: 'Carlos Joaquín Rivera Camarillo' }
+  ],
+  "San José": [
+    { escuela: 'Escuela Normal Regional de Especialización del Estado de Coahuila', programa: 'Pizarra Financiera', contacto: 'Francisco Javier Alvarado' },
+    { escuela: 'Escuela Normal "Valle del Mezquital"', programa: 'Ma Noya', contacto: 'José Eduardo Salinas González' },
+    { escuela: 'Escuela Normal Urbana Federal Cuautla', programa: 'Voces y Saberes. El Podcast', contacto: 'Saúl Ferrer Aragón' },
+    { escuela: 'Benemérito Centro Regional de Educación Normal "Marcelo Rubio Ruiz"', programa: 'Frecuencia Normalista', contacto: 'César Álvarez Rodríguez' }
+  ],
+  "Comondú": [
+    { escuela: 'Dirección General de Educación Superior para el Magisterio', programa: 'Cultura Normalista', contacto: 'Raymundo Bernardino Becerril' },
+    { escuela: 'Dirección General de Formación y Superación Docente. SEPH (Hidalgo)', programa: 'Cápsulas Informativas (numeradas de manera consecutiva)', contacto: 'Ricardo Vital Rivera' },
+    { escuela: 'Escuela Normal Rural "Gral. Emiliano Zapata"', programa: 'Voces y Saberes. El Podcast', contacto: 'Sin contacto' },
+    { escuela: 'Escuela Normal "Ing. Miguel F. Martínez" Centenaria y Benemérita', programa: 'Seminario: Integración de la Educación Socioemocional en Educación Básica', contacto: 'Héctor Alonso Rosas Álvarez' }
+  ]
+};
+
+function renderLocusModal(){
+  const body = document.getElementById('locusModalBody');
+  body.innerHTML = Object.entries(LOCUS_MESAS).map(([salon, mesas]) => `
+    <div class="salon-group">
+      <div class="salon-title">Salón ${salon}</div>
+      ${mesas.map(m => `
+        <div class="mesa-card">
+          <p class="mesa-programa">${m.programa}</p>
+          <p class="mesa-escuela">${m.escuela}</p>
+          <p class="mesa-contacto"><b>Contacto:</b> ${m.contacto}</p>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+function openLocusModal(){
+  renderLocusModal();
+  document.getElementById('locusModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeLocusModal(){
+  document.getElementById('locusModal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape') closeLocusModal();
+});
+</script>
 
 <script>
 document.querySelectorAll('.tab-btn').forEach(btn=>{
